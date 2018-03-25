@@ -14,13 +14,18 @@ class Personality:
         # get active users
         logging.debug('  contemplating..')
         user_set = self.get_active_users()
+        logging.debug(user_set)
 
     def get_active_users(self):
+        my_active_users = []
         try:
             cnx = self.cnxpool.get_connection()
             cursor = cnx.cursor()
-            args = []
-            results = cursor.callproc('', args)
+            cursor.callproc('getActiveUsers', [])
+            for result in cursor.stored_results():
+                rows = result.fetchall()
+                for tuple in rows:
+                    my_active_users.append(tuple[0])
             cursor.close()
         except socket.error, e:
             logging.debug(e)
@@ -34,3 +39,4 @@ class Personality:
         else:
             cnx.close()
 
+        return my_active_users
