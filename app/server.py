@@ -14,6 +14,7 @@ import time
 import random
 
 import lib.docker_config as config
+import lib.personality
 
 # https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
 def make_sure_path_exists(path):
@@ -53,11 +54,13 @@ except mysql.connector.Error as err:
 
 if __name__ == '__main__':
     logging.debug('starting.')
+    me = lib.personality.Personality(cnxpool)
     while True:
         sleep_internval = random.randint(1, 10)
         logging.debug('sleeping for (' + str(sleep_internval) + ')')
         time.sleep(sleep_internval)
         logging.debug('  waking..')
+        me.contemplate()
 
 
 
