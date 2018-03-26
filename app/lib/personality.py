@@ -11,6 +11,9 @@ import storyteller
 
 class Personality:
 
+    MAX_NAPPY_TIME = 10 # in seconds
+
+
     def __init__(self, cnxpool):
         self.cnxpool = cnxpool
         self.loremaster = storyteller.StoryTeller()
@@ -28,12 +31,11 @@ class Personality:
         # now sleep..
         self.slumber()
 
-
     def slumber(self):
-        sleep_internval = random.randint(1, 10)
-        logging.debug('sleeping for (' + str(sleep_internval) + ')')
+        sleep_internval = random.randint(1, self.MAX_NAPPY_TIME)
+        # logging.debug('sleeping for (' + str(sleep_internval) + ')')
         time.sleep(sleep_internval)
-        logging.debug('  waking..')
+        # logging.debug('  waking..')
 
     def populationReview(self, target_user):
         # Review for population changes
