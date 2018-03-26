@@ -56,11 +56,4 @@ if __name__ == '__main__':
     logging.debug('starting.')
     me = lib.personality.Personality(cnxpool)
     while True:
-        sleep_internval = random.randint(1, 10)
-        logging.debug('sleeping for (' + str(sleep_internval) + ')')
-        time.sleep(sleep_internval)
-        logging.debug('  waking..')
         me.contemplate()
-
-
-
