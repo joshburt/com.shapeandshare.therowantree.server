@@ -63,7 +63,7 @@ class Personality:
     ##############
 
     def process_action_queue(self, action_queue):
-        logging.debug(action_queue)
+        # logging.debug(action_queue)
         for action in action_queue:
             self.callProc(action[0], action[1])
 
@@ -120,7 +120,7 @@ class Personality:
         # process rewards
         for reward in event['reward']:
             amount = random.randint(1, event['reward'][reward])
-            logging.debug('should process reward ' + reward + ': ' + str(amount))
+            # logging.debug('should process reward ' + reward + ': ' + str(amount))
             action_queue.append(
                 ['deltaUserStoreByStoreName',[target_user, reward, amount]]
             )
@@ -133,31 +133,3 @@ class Personality:
                 action_queue.append(['deltaUserPopulationByID', [target_user, amount]])
 
         self.process_action_queue(action_queue)
-
-        ## SAMPLE PAYLOAD
-        # event =
-        #{
-        #    'title': 'The Forest Has Legs',
-        #    'text': [
-        #        'maybe it was their time to swarm, or just the presence of the settlement',
-        #        'the forest came alive as they blanketed everything, assaulting and cocooning all those who fell to them',
-        #        'moarn not those who died, but those the spiders took away'
-        #    ],
-        #    'notification': 'the skittering as the spiders retreated back into the forest haunts the dreams of even the bravest of those who survived',
-        #    'reward': {
-        #        'gems': 1,
-        #        'coins': 10,
-        #        'fur': 100,
-        #        'meat': 10,
-        #        'teeth': 10
-        #    },
-        #    'boon': {
-        #        'population': 10
-        #    }
-        #}
-        # logging.debug(target_user)
-        # logging.debug(event)
-
-
-
-
