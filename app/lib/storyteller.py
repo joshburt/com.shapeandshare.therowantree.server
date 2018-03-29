@@ -54,7 +54,7 @@ class StoryTeller:
                 ],
                 'notification': 'a robot opens fire on the villagers',
                 'reward': {
-                    'gems': 1
+                    'gems': 1,
                     'coins': 10
                 },
                 'boon': {
@@ -76,7 +76,7 @@ class StoryTeller:
                     'gems': 1,
                     'coins': 10,
                     'fur': 100,
-                    'meat': 10
+                    'meat': 10,
                     'teeth': 10
                 },
                 'boon': {
@@ -126,3 +126,27 @@ class StoryTeller:
         eventMaxAmount = self.population_events['decrease'][eventIndex][2]
         eventOutcome = random.randint(eventMinAmount, eventMaxAmount) * -1
         return eventDescription, eventOutcome
+
+    def generateEvent(self, target_user):
+        new_event = self.events['global'][3]
+
+        # Review current active feature state
+            # for active feature
+                # 1 room
+                    # for user's active feature state:
+                        # feature_state_id, feature_id, state_index, state_name, state_description
+                        # '1', '1', '1', 'A Shadowy Grove', NULL
+                        # '2', '1', '2', 'A Rowan Tree Lit By Firelight', NULL
+                # 2 outside
+                    # for user's active feature state:
+                        # feature_state_id, feature_id, state_index, state_name, state_description
+                        # '3', '2', '1', 'A Silent Forest', NULL
+                        # '4', '2', '2', 'A Lonely Hut', NULL
+                        # '5', '2', '3', 'A Cozy Hamlet', NULL
+                        # '6', '2', '4', 'A Quaint Village', NULL
+                        # '7', '2', '5', 'A Bustling Town', NULL
+                        # '8', '2', '6', 'A Swarming City', NULL
+                # 3 world
+                # 4 spaceship
+
+        return new_event

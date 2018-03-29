@@ -13,7 +13,6 @@ class Personality:
 
     MAX_NAPPY_TIME = 10 # in seconds
 
-
     def __init__(self, cnxpool):
         self.cnxpool = cnxpool
         self.loremaster = storyteller.StoryTeller()
@@ -25,8 +24,11 @@ class Personality:
         for target_user in user_set:
             # logging.debug('    processing user (' + str(target_user) + ')')
 
+            # Lets add an encounter
+            self.encounter(target_user)
+
             # Review for population changes
-            self.populationReview(target_user)
+            self.population_review(target_user)
 
         # now sleep..
         self.slumber()
@@ -37,7 +39,7 @@ class Personality:
         time.sleep(sleep_internval)
         # logging.debug('  waking..')
 
-    def populationReview(self, target_user):
+    def population_review(self, target_user):
         # Review for population changes
         amount, notification = None, None
         if self.luck(10) is True:
@@ -52,12 +54,26 @@ class Personality:
                 # and send off a notification
                 notification, amount = self.loremaster.populationDecreaseEvent()
 
-            self.callProc('deltaUserPopulationByID', [target_user, amount])
-            self.callProc('sendUserNotification', [target_user, notification])
+            action_queue = [
+                ['deltaUserPopulationByID', [target_user, amount]],
+                ['sendUserNotification', [target_user, notification]]
+            ]
+            self.process_action_queue(action_queue)
+
+    def encounter(self, target_user):
+        if self.luck(10) is True:
+            # logging.debug('     encounter has occured')
+            event = self.loremaster.generateEvent(target_user)
+            self.process_user_event(event, target_user)
 
     ##############
     ## Data Tier
     ##############
+
+    def process_action_queue(self, action_queue):
+        logging.debug(action_queue)
+        for action in action_queue:
+            self.callProc(action[0], action[1])
 
     def callProc(self, name, args):
         rows = None
@@ -95,3 +111,59 @@ class Personality:
         if flip <= odds:
             return True
         return False
+
+    def process_user_event(self, event, target_user):
+        action_queue = []
+
+        # add the event title
+        action_queue.append(['sendUserNotification', [target_user, event['title']]])
+
+        # process and add event text
+        for line in event['text']:
+            action_queue.append(['sendUserNotification', [target_user, line]])
+
+        # add event notification
+        action_queue.append(['sendUserNotification', [target_user, event['notification']]])
+
+        # process rewards
+        for reward in event['reward']:
+            amount = random.randint(1, event['reward'][reward]) * -1
+            logging.debug('should process reward ' + reward + ': ' + str(amount))
+
+        # process boons
+        for boon in event['boon']:
+            amount = random.randint(1, event['boon'][boon]) * -1
+            if boon == 'population':
+                logging.debug('processing population boon')
+                logging.debug('losing ' + str(amount))
+                action_queue.append(['deltaUserPopulationByID', [target_user, amount]])
+
+        self.process_action_queue(action_queue)
+
+        ## SAMPLE PAYLOAD
+        # event =
+        #{
+        #    'title': 'The Forest Has Legs',
+        #    'text': [
+        #        'maybe it was their time to swarm, or just the presence of the settlement',
+        #        'the forest came alive as they blanketed everything, assaulting and cocooning all those who fell to them',
+        #        'moarn not those who died, but those the spiders took away'
+        #    ],
+        #    'notification': 'the skittering as the spiders retreated back into the forest haunts the dreams of even the bravest of those who survived',
+        #    'reward': {
+        #        'gems': 1,
+        #        'coins': 10,
+        #        'fur': 100,
+        #        'meat': 10,
+        #        'teeth': 10
+        #    },
+        #    'boon': {
+        #        'population': 10
+        #    }
+        #}
+        # logging.debug(target_user)
+        # logging.debug(event)
+
+
+
+
