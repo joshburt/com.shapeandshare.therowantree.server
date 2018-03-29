@@ -19,11 +19,8 @@ class Personality:
 
     def contemplate(self):
         # get active users
-        # logging.debug('  contemplating..')
         user_set = self.get_active_users()
         for target_user in user_set:
-            # logging.debug('    processing user (' + str(target_user) + ')')
-
             # Lets add an encounter
             self.encounter(target_user)
 
@@ -44,14 +41,10 @@ class Personality:
         amount, notification = None, None
         if self.luck(10) is True:
             if self.luck(50) is True:
-                # logging.debug('     its your day!')
                 # lets schedule a population increase
-                # and send off a notification
                 notification, amount = self.loremaster.populationIncreaseEvent()
             else:
-                # logging.debug('      uh ho..')
-                # lets schedule a population descrease
-                # and send off a notification
+                # lets schedule a population decrease
                 notification, amount = self.loremaster.populationDecreaseEvent()
 
             action_queue = [
@@ -62,7 +55,6 @@ class Personality:
 
     def encounter(self, target_user):
         if self.luck(10) is True:
-            # logging.debug('     encounter has occured')
             event = self.loremaster.generateEvent(target_user)
             self.process_user_event(event, target_user)
 
@@ -127,15 +119,14 @@ class Personality:
 
         # process rewards
         for reward in event['reward']:
-            amount = random.randint(1, event['reward'][reward]) * -1
+            amount = random.randint(1, event['reward'][reward])
             logging.debug('should process reward ' + reward + ': ' + str(amount))
 
         # process boons
         for boon in event['boon']:
             amount = random.randint(1, event['boon'][boon]) * -1
             if boon == 'population':
-                logging.debug('processing population boon')
-                logging.debug('losing ' + str(amount))
+                action_queue.append(['sendUserNotification', [target_user, 'population decreased by ' + str(amount)]])
                 action_queue.append(['deltaUserPopulationByID', [target_user, amount]])
 
         self.process_action_queue(action_queue)
