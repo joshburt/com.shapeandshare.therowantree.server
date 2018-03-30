@@ -105,6 +105,9 @@ class Personality:
         return False
 
     def process_user_event(self, event, target_user):
+        if event is None:
+            return
+
         action_queue = []
 
         # add the event title

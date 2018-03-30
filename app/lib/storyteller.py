@@ -128,25 +128,22 @@ class StoryTeller:
         return eventDescription, eventOutcome
 
     def generateEvent(self, target_user):
-        new_event = self.events['global'][3]
+        num_events = len(self.events['global'])
+        event_index = random.randint(1, num_events) - 1
+        new_event = self.events['global'][event_index]
 
-        # Review current active feature state
-            # for active feature
-                # 1 room
-                    # for user's active feature state:
-                        # feature_state_id, feature_id, state_index, state_name, state_description
-                        # '1', '1', '1', 'A Shadowy Grove', NULL
-                        # '2', '1', '2', 'A Rowan Tree Lit By Firelight', NULL
-                # 2 outside
-                    # for user's active feature state:
-                        # feature_state_id, feature_id, state_index, state_name, state_description
-                        # '3', '2', '1', 'A Silent Forest', NULL
-                        # '4', '2', '2', 'A Lonely Hut', NULL
-                        # '5', '2', '3', 'A Cozy Hamlet', NULL
-                        # '6', '2', '4', 'A Quaint Village', NULL
-                        # '7', '2', '5', 'A Bustling Town', NULL
-                        # '8', '2', '6', 'A Swarming City', NULL
-                # 3 world
-                # 4 spaceship
+        # check requirements
+        requirement_check = True
+        for requirement in new_event['requirements']:
+            if requirement == 'population':
+                min_required_pop = new_event['requirements'][requirement]
+                logging.debug('required pop: ' + str(min_required_pop))
 
-        return new_event
+                #TODO: check the requirement
+            else:
+                logging.debug('required state: ' + requirement)
+
+        if requirement_check is True:
+            return new_event
+
+        return None
