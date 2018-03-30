@@ -124,9 +124,8 @@ class Personality:
         for reward in event['reward']:
             amount = random.randint(1, event['reward'][reward])
             # logging.debug('should process reward ' + reward + ': ' + str(amount))
-            action_queue.append(
-                ['deltaUserStoreByStoreName',[target_user, reward, amount]]
-            )
+            action_queue.append(['sendUserNotification', [target_user, 'reward increased by ' + str(amount)]])
+            action_queue.append(['deltaUserStoreByStoreName',[target_user, reward, amount]])
 
         # process boons
         for boon in event['boon']:
