@@ -189,6 +189,90 @@ class StoryTeller:
                 'boon': {
                     'population': 10
                 }
+            },
+            {
+                'title': 'Racoon Attack',
+                'requirements': {
+                    'population': 5
+                },
+                'text': [
+                    'Hissing and screaming the raccoon attacks',
+                    'Weilding a pike, it attacked from atop its',
+                    'magestic human mount.'
+                ],
+                'notification': '',
+                'reward': {
+                    'sulphur': 1,
+                    'bait': 1,
+                    'wood': 1,
+                    'stone': 1,
+                    'fur': 10,
+                    'teeth': 10,
+                    'meat': 10,
+                    'cloth': 5,
+                    'coins': 5,
+                    'torch': 5,
+                    'bone spear': 1
+                },
+                'boon': {
+                    'population': 2,
+                }
+            },
+            {
+                'title': 'The Shock Wave',
+                'requirements': {
+                    'population': 1
+                },
+                'text': [
+                    'A grate shock wave rolled over the town, breaking everyting of questionbable assemble.',
+                    'A short time later, that awful sound followed, so loud some of us never recovered',
+                    'our hearing.',
+                    'Days later some refugees from that far off disaster arrived.  Blisted, burned, and rotting.'
+                ],
+                'notification': 'hello?  hello!  I still cant hear anything, ugh.',
+                'reward': {
+                    'population': 30,
+                    'sulphur': 3,
+                    'coins': 20,
+                    'gems': 10,
+                    'medicine': 5
+                },
+                'boon': {
+                    'population': 5,
+                    'sulphur': 2,
+                    'bait': 5,
+                    'wood': 5,
+                    'stone': 5,
+                    'fur': 3,
+                    'teeth': 2,
+                    'meat': 5,
+                    'meatpie': 5,
+                    'cured meat': 5,
+                    'leather': 1,
+                    'iron': 1,
+                    'steel': 1,
+                    'coal': 5,
+                    'scales': 1,
+                    'cloth': 3,
+                    'coins': 5,
+                    'gems': 1,
+                    'charm': 1,
+                    'torch': 5,
+                    'medicine': 5,
+                    'seed': 5,
+                    'crops': 10,
+                    'bone spear': 5,
+                    'bayonet': 2,
+                    'bolas': 5,
+                    'bullets': 5,
+                    'iron sword': 1,
+                    'steel sword': 1,
+                    'leather armour': 1,
+                    'iron armour': 1,
+                    'steel armour': 1,
+                    'rifle': 1,
+                    'grenade': 2
+                }
             }
         ]
     }
