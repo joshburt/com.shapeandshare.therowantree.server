@@ -110,6 +110,8 @@ class Personality:
             for boon in event['boon']:
                 amount = random.randint(1, event['boon'][boon])
                 if boon == 'population':
+                    if self.get_user_population(target_user) < amount:
+                        amount = self.get_user_population(target_user)
                     action_queue.append(['sendUserNotification', [target_user, 'population decreased by ' + str(amount)]])
                     action_queue.append(['deltaUserPopulationByID', [target_user, (amount * -1)]])
                 else:
