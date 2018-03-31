@@ -208,7 +208,7 @@ class StoryTeller:
             for requirement in new_event['requirements']:
                 if requirement == 'population':
                     min_required_pop = new_event['requirements'][requirement]
-                    logging.debug('reported user population: ' + str(user_population))
+                    # logging.debug('reported user population: ' + str(user_population))
                     if user_population >= min_required_pop:
                         requirement_check = True
 

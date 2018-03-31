@@ -63,7 +63,6 @@ class Personality:
             user_stores[tuple[0]] = tuple[2]
         return user_stores
 
-
     def luck(self, odds):
         ## Ask only for what you truely need and beware
         ## you may be granted your wish.
@@ -101,7 +100,6 @@ class Personality:
             action_queue.append(['sendUserNotification', [target_user, event['notification']]])
 
         # process rewards
-
         if 'reward' in event:
             for reward in event['reward']:
                 amount = random.randint(1, event['reward'][reward])
