@@ -21,6 +21,7 @@ class Personality:
         # get active users
         user_set = self.get_active_users()
         for target_user in user_set:
+
             # Lets add an encounter
             self.encounter(target_user)
 
@@ -29,12 +30,6 @@ class Personality:
 
         # now sleep..
         self.slumber()
-
-    def slumber(self):
-        sleep_internval = random.randint(1, self.MAX_NAPPY_TIME)
-        # logging.debug('sleeping for (' + str(sleep_internval) + ')')
-        time.sleep(sleep_internval)
-        # logging.debug('  waking..')
 
     def population_review(self, target_user):
         # Review for population changes
@@ -58,37 +53,15 @@ class Personality:
             event = self.loremaster.generateEvent(self.get_user_population(target_user))
             self.process_user_event(event, target_user)
 
+    def slumber(self):
+        sleep_internval = random.randint(1, self.MAX_NAPPY_TIME)
+        # logging.debug('sleeping for (' + str(sleep_internval) + ')')
+        time.sleep(sleep_internval)
+        # logging.debug('  waking..')
+
     ##############
     ## Data Tier
     ##############
-
-    def process_action_queue(self, action_queue):
-        # logging.debug(action_queue)
-        for action in action_queue:
-            self.callProc(action[0], action[1])
-
-    def callProc(self, name, args):
-        rows = None
-        try:
-            cnx = self.cnxpool.get_connection()
-            cursor = cnx.cursor()
-            cursor.callproc(name, args)
-            for result in cursor.stored_results():
-                rows = result.fetchall()
-            cursor.close()
-        except socket.error, e:
-            logging.debug(e)
-        except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                logging.debug("Something is wrong with your user name or password")
-            elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                logging.debug("Database does not exist")
-            else:
-                logging.debug(err)
-        else:
-            cnx.close()
-        return rows
-
     def get_active_users(self):
         my_active_users = []
         rows = self.callProc('getActiveUsers', [])
@@ -110,6 +83,14 @@ class Personality:
         if flip <= odds:
             return True
         return False
+
+    ##############
+    ## Event Queueing
+    ##############
+    def process_action_queue(self, action_queue):
+        # logging.debug(action_queue)
+        for action in action_queue:
+            self.callProc(action[0], action[1])
 
     def process_user_event(self, event, target_user):
         if event is None:
@@ -142,3 +123,25 @@ class Personality:
                 action_queue.append(['deltaUserPopulationByID', [target_user, amount]])
 
         self.process_action_queue(action_queue)
+
+    def callProc(self, name, args):
+        rows = None
+        try:
+            cnx = self.cnxpool.get_connection()
+            cursor = cnx.cursor()
+            cursor.callproc(name, args)
+            for result in cursor.stored_results():
+                rows = result.fetchall()
+            cursor.close()
+        except socket.error, e:
+            logging.debug(e)
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                logging.debug("Something is wrong with your user name or password")
+            elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                logging.debug("Database does not exist")
+            else:
+                logging.debug(err)
+        else:
+            cnx.close()
+        return rows
