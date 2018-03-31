@@ -108,14 +108,14 @@ class Personality:
         # process boons
         if 'boon' in event:
             for boon in event['boon']:
-                amount = random.randint(1, event['boon'][boon]) * -1
+                amount = random.randint(1, event['boon'][boon])
                 if boon == 'population':
                     action_queue.append(['sendUserNotification', [target_user, 'population decreased by ' + str(amount)]])
-                    action_queue.append(['deltaUserPopulationByID', [target_user, amount]])
+                    action_queue.append(['deltaUserPopulationByID', [target_user, (amount * -1)]])
                 else:
                     action_queue.append(
-                        ['sendUserNotification', [target_user, reward + ' decreased by ' + str(amount)]])
-                    action_queue.append(['deltaUserStoreByStoreName', [target_user, reward, (amount * -1)]])
+                        ['sendUserNotification', [target_user, boon + ' decreased by ' + str(amount)]])
+                    action_queue.append(['deltaUserStoreByStoreName', [target_user, boon, (amount * -1)]])
 
         self.process_action_queue(action_queue)
 
