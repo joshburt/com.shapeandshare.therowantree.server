@@ -127,22 +127,19 @@ class StoryTeller:
         eventOutcome = random.randint(eventMinAmount, eventMaxAmount) * -1
         return eventDescription, eventOutcome
 
-    def generateEvent(self, target_user):
+    def generateEvent(self, user_population):
         num_events = len(self.events['global'])
         event_index = random.randint(1, num_events) - 1
         new_event = self.events['global'][event_index]
 
         # check requirements
-        requirement_check = True
+        requirement_check = False
         for requirement in new_event['requirements']:
             if requirement == 'population':
                 min_required_pop = new_event['requirements'][requirement]
-                logging.debug('required pop: ' + str(min_required_pop))
-
-                #TODO: check the requirement
-            else:
-                logging.debug('required state: ' + requirement)
-
+                logging.debug('reported user population: ' + str(user_population))
+                if user_population >= min_required_pop:
+                    requirement_check = True
         if requirement_check is True:
             return new_event
 

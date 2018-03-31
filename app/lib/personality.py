@@ -55,7 +55,7 @@ class Personality:
 
     def encounter(self, target_user):
         if self.luck(10) is True:
-            event = self.loremaster.generateEvent(target_user)
+            event = self.loremaster.generateEvent(self.get_user_population(target_user))
             self.process_user_event(event, target_user)
 
     ##############
@@ -95,6 +95,13 @@ class Personality:
         for tuple in rows:
             my_active_users.append(tuple[0])
         return my_active_users
+
+    def get_user_population(self, target_user):
+        user_population = None
+        rows = self.callProc('getUserPopulationByID', [target_user,])
+        for tuple in rows:
+            user_population = tuple[0]
+        return user_population
 
     def luck(self, odds):
         ## Ask only for what you truely need and beware
