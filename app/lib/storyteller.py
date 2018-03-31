@@ -191,25 +191,6 @@ class StoryTeller:
         ]
     }
 
-#    def __init__(self):
-#        logging.debug('lore master exists.')
-
-    def populationIncreaseEvent(self):
-        eventIndex = random.randint(1, len(self.population_events['increase'])) - 1
-        eventDescription = self.population_events['increase'][eventIndex][0]
-        eventMinAmount = self.population_events['increase'][eventIndex][1]
-        eventMaxAmount = self.population_events['increase'][eventIndex][2]
-        eventOutcome = random.randint(eventMinAmount, eventMaxAmount)
-        return eventDescription, eventOutcome
-
-    def populationDecreaseEvent(self):
-        eventIndex = random.randint(1, len(self.population_events['decrease'])) - 1
-        eventDescription = self.population_events['decrease'][eventIndex][0]
-        eventMinAmount = self.population_events['decrease'][eventIndex][1]
-        eventMaxAmount = self.population_events['decrease'][eventIndex][2]
-        eventOutcome = random.randint(eventMinAmount, eventMaxAmount) * -1
-        return eventDescription, eventOutcome
-
     def generateEvent(self, user_population):
         num_events = len(self.events['global'])
         event_index = random.randint(1, num_events) - 1

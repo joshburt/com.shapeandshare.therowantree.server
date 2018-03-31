@@ -83,29 +83,39 @@ class Personality:
             action_queue.append(['sendUserNotification', [target_user, event['title']]])
 
         # process and add event text
-        if event['text'] is not None:
+        if 'text' in event:
             for line in event['text']:
                 action_queue.append(['sendUserNotification', [target_user, line]])
 
         # add event notification
-        if event['notification'] is not None:
+        if 'notification' in event:
             action_queue.append(['sendUserNotification', [target_user, event['notification']]])
 
         # process rewards
-        if event['reward'] is not None:
+        if 'reward' in event:
             for reward in event['reward']:
                 amount = random.randint(1, event['reward'][reward])
                 # logging.debug('should process reward ' + reward + ': ' + str(amount))
-                action_queue.append(['sendUserNotification', [target_user, 'reward increased by ' + str(amount)]])
-                action_queue.append(['deltaUserStoreByStoreName',[target_user, reward, amount]])
+
+                if reward == 'population':
+                    action_queue.append(['sendUserNotification', [target_user, 'population increased by ' + str(amount)]])
+                    action_queue.append(['deltaUserPopulationByID', [target_user, amount]])
+                else:
+                    action_queue.append(
+                        ['sendUserNotification', [target_user, reward + ' increased by ' + str(amount)]])
+                    action_queue.append(['deltaUserStoreByStoreName', [target_user, reward, amount]])
 
         # process boons
-        if event['boon'] is not None:
+        if 'boon' in event:
             for boon in event['boon']:
                 amount = random.randint(1, event['boon'][boon]) * -1
                 if boon == 'population':
                     action_queue.append(['sendUserNotification', [target_user, 'population decreased by ' + str(amount)]])
                     action_queue.append(['deltaUserPopulationByID', [target_user, amount]])
+                else:
+                    action_queue.append(
+                        ['sendUserNotification', [target_user, reward + ' decreased by ' + str(amount)]])
+                    action_queue.append(['deltaUserStoreByStoreName', [target_user, reward, (amount * -1)]])
 
         self.process_action_queue(action_queue)
 
