@@ -121,18 +121,18 @@ class Personality:
         # process boons
         if 'boon' in event:
             for boon in event['boon']:
-                amount = random.randint(1, event['boon'][boon])
                 if boon == 'population':
-                    if self.get_user_population(target_user) < amount:
-                        amount = self.get_user_population(target_user)
-                    action_queue.append(['sendUserNotification', [target_user, 'population decreased by ' + str(amount)]])
-                    action_queue.append(['deltaUserPopulationByID', [target_user, (amount * -1)]])
+                    pop_amount = random.randint(1, event['boon'][boon])
+                    if self.get_user_population(target_user) < pop_amount:
+                        pop_amount = self.get_user_population(target_user)
+                    action_queue.append(['sendUserNotification', [target_user, 'population decreased by ' + str(pop_amount)]])
+                    action_queue.append(['deltaUserPopulationByID', [target_user, (pop_amount * -1)]])
                 else:
+                    amount = random.randint(1, event['boon'][boon])
                     if boon in user_stores:
                         store_amt = user_stores[boon]
                         if store_amt < amount:
                             amount = store_amt
-
                     action_queue.append(
                         ['sendUserNotification', [target_user, boon + ' decreased by ' + str(amount)]])
                     action_queue.append(['deltaUserStoreByStoreName', [target_user, boon, (amount * -1)]])
