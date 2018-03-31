@@ -3,12 +3,14 @@ import random
 
 class StoryTeller:
 
+    MAX_ENCOUNTER_TRIES = 10
+
     events = {
         'global': [
             {
                 'title': 'a stranger arrives in the night',
                 'requirements': {
-                    'population': 1
+                    'population': 0
                 },
                 'reward': {
                     'population': 1
@@ -62,7 +64,7 @@ class StoryTeller:
             {
                 'title': 'a fire rampages through one of the huts, destroying it.',
                 'requirements': {
-                    'population': 1
+                    'population': 15
                 },
                 'text': [
                     'all residents in the hut perished in the fire.'
@@ -74,7 +76,7 @@ class StoryTeller:
             {
                 'title': 'a terrible plague is fast spreading through the village.',
                 'requirements': {
-                    'population': 1
+                    'population': 20
                 },
                 'text': [
                     'the nights are rent with screams.',
@@ -87,7 +89,7 @@ class StoryTeller:
             {
                 'title': 'a sickness is spreading through the village.',
                 'requirements': {
-                    'population': 1
+                    'population': 15
                 },
                 'text': [
                     'only a few die.',
@@ -100,7 +102,7 @@ class StoryTeller:
             {
                 'title': 'some villagers are ill',
                 'requirements': {
-                    'population': 1
+                    'population': 6
                 },
                 'boon': {
                     'population': 3
@@ -109,7 +111,7 @@ class StoryTeller:
             {
                 'title': 'A Beast Attack',
                 'requirements': {
-                    'population': 1
+                    'population': 15
                 },
                 'text': [
                     'a pack of snarling beasts pours out of the trees.',
@@ -147,7 +149,7 @@ class StoryTeller:
             {
                 'title': 'A Ghoul Attack',
                 'requirements': {
-                    'population': 15
+                    'population': 10
                 },
                 'text': [
                     'the groans could be heard a few hours before they dragged themselves through the main part of the settlement',
@@ -169,7 +171,7 @@ class StoryTeller:
             {
                 'title': 'The Forest Has Legs',
                 'requirements': {
-                    'population': 30
+                    'population': 20
                 },
                 'text': [
                     'maybe it was their time to swarm, or just the presence of the settlement',
@@ -193,18 +195,26 @@ class StoryTeller:
 
     def generateEvent(self, user_population):
         num_events = len(self.events['global'])
-        event_index = random.randint(1, num_events) - 1
-        new_event = self.events['global'][event_index]
-
-        # check requirements
         requirement_check = False
-        for requirement in new_event['requirements']:
-            if requirement == 'population':
-                min_required_pop = new_event['requirements'][requirement]
-                logging.debug('reported user population: ' + str(user_population))
-                if user_population >= min_required_pop:
-                    requirement_check = True
+        counter = 0
+        new_event = None
 
-        if requirement_check is True:
-            return new_event
-        return None
+        while requirement_check is False:
+            counter += 1
+            event_index = random.randint(1, num_events) - 1
+            new_event = self.events['global'][event_index]
+
+            # check requirements
+            for requirement in new_event['requirements']:
+                if requirement == 'population':
+                    min_required_pop = new_event['requirements'][requirement]
+                    logging.debug('reported user population: ' + str(user_population))
+                    if user_population >= min_required_pop:
+                        requirement_check = True
+
+            # bail out if we've reached out max, i guess they get a boring time..
+            if counter >= self.MAX_ENCOUNTER_TRIES:
+                new_event = None
+                requirement_check = True
+
+        return new_event
