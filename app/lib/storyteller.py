@@ -3,26 +3,109 @@ import random
 
 class StoryTeller:
 
-    # DESCRIPTION, MIN AMOUNT, MAX AMOUNT
-    population_events = {
-        'increase': [
-            ['a stranger arrives in the night', 1, 1],
-            ['a weathered family takes up in one of the huts', 2, 3],
-            ['a small group arrives, all dust and bones', 4, 6],
-            ['a convoy lurches in, equal parts worry and hope', 4, 8],
-            ['a half-feral and malnourished child is discovered huddled by the great tree', 1, 1],
-            ['another lone wanderer comes into town, in tears to have found a place of sanctuary against the world', 1, 1]
-        ],
-        'decrease': [
-            ['a fire rampages through one of the huts, destroying it.  all residents in the hut perished in the fire.', 1, 10],
-            ['a terrible plague is fast spreading through the village.  the nights are rent with screams.  the only hope is a quick death.', 1, 20],
-            ['a sickness is spreading through the village.  only a few die.  the rest bury them.', 1, 10],
-            ['some villagers are ill', 1, 3]
-        ]
-    }
-
     events = {
         'global': [
+            {
+                'title': 'a stranger arrives in the night',
+                'requirements': {
+                    'population': 1
+                },
+                'reward': {
+                    'population': 1
+                }
+            },
+            {
+                'title': 'a weathered family takes up in one of the huts',
+                'requirements': {
+                    'population': 1
+                },
+                'reward': {
+                    'population': 3
+                }
+            },
+            {
+                'title': 'a small group arrives, all dust and bones',
+                'requirements': {
+                    'population': 1
+                },
+                'reward': {
+                    'population': 5
+                }
+            },
+            {
+                'title': 'a convoy lurches in, equal parts worry and hope',
+                'requirements': {
+                    'population': 1
+                },
+                'reward': {
+                    'population': 6
+                }
+            },
+            {
+                'title': 'a half-feral and malnourished child is discovered huddled by the great tree',
+                'requirements': {
+                    'population': 1
+                },
+                'reward': {
+                    'population': 1
+                }
+            },
+            {
+                'title': 'another lone wanderer comes into town, in tears to have found a place of sanctuary against the world',
+                'requirements': {
+                    'population': 1
+                },
+                'reward': {
+                    'population': 1
+                }
+            },
+            {
+                'title': 'a fire rampages through one of the huts, destroying it.',
+                'requirements': {
+                    'population': 1
+                },
+                'text': [
+                    'all residents in the hut perished in the fire.'
+                ],
+                'boon': {
+                    'population': 10
+                }
+            },
+            {
+                'title': 'a terrible plague is fast spreading through the village.',
+                'requirements': {
+                    'population': 1
+                },
+                'text': [
+                    'the nights are rent with screams.',
+                    'the only hope is a quick death.'
+                ],
+                'boon': {
+                    'population': 15
+                }
+            },
+            {
+                'title': 'a sickness is spreading through the village.',
+                'requirements': {
+                    'population': 1
+                },
+                'text': [
+                    'only a few die.',
+                    'the rest bury them.'
+                ],
+                'boon': {
+                    'population': 10
+                }
+            },
+            {
+                'title': 'some villagers are ill',
+                'requirements': {
+                    'population': 1
+                },
+                'boon': {
+                    'population': 3
+                }
+            },
             {
                 'title': 'A Beast Attack',
                 'requirements': {
@@ -108,8 +191,8 @@ class StoryTeller:
         ]
     }
 
-    def __init__(self):
-        logging.debug('lore master exists.')
+#    def __init__(self):
+#        logging.debug('lore master exists.')
 
     def populationIncreaseEvent(self):
         eventIndex = random.randint(1, len(self.population_events['increase'])) - 1

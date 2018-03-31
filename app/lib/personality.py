@@ -25,28 +25,8 @@ class Personality:
             # Lets add an encounter
             self.encounter(target_user)
 
-            # Review for population changes
-            self.population_review(target_user)
-
         # now sleep..
         self.slumber()
-
-    def population_review(self, target_user):
-        # Review for population changes
-        amount, notification = None, None
-        if self.luck(10) is True:
-            if self.luck(50) is True:
-                # lets schedule a population increase
-                notification, amount = self.loremaster.populationIncreaseEvent()
-            else:
-                # lets schedule a population decrease
-                notification, amount = self.loremaster.populationDecreaseEvent()
-
-            action_queue = [
-                ['deltaUserPopulationByID', [target_user, amount]],
-                ['sendUserNotification', [target_user, notification]]
-            ]
-            self.process_action_queue(action_queue)
 
     def encounter(self, target_user):
         if self.luck(10) is True:
@@ -99,28 +79,33 @@ class Personality:
         action_queue = []
 
         # add the event title
-        action_queue.append(['sendUserNotification', [target_user, event['title']]])
+        if event['title'] is not None:
+            action_queue.append(['sendUserNotification', [target_user, event['title']]])
 
         # process and add event text
-        for line in event['text']:
-            action_queue.append(['sendUserNotification', [target_user, line]])
+        if event['text'] is not None:
+            for line in event['text']:
+                action_queue.append(['sendUserNotification', [target_user, line]])
 
         # add event notification
-        action_queue.append(['sendUserNotification', [target_user, event['notification']]])
+        if event['notification'] is not None:
+            action_queue.append(['sendUserNotification', [target_user, event['notification']]])
 
         # process rewards
-        for reward in event['reward']:
-            amount = random.randint(1, event['reward'][reward])
-            # logging.debug('should process reward ' + reward + ': ' + str(amount))
-            action_queue.append(['sendUserNotification', [target_user, 'reward increased by ' + str(amount)]])
-            action_queue.append(['deltaUserStoreByStoreName',[target_user, reward, amount]])
+        if event['reward'] is not None:
+            for reward in event['reward']:
+                amount = random.randint(1, event['reward'][reward])
+                # logging.debug('should process reward ' + reward + ': ' + str(amount))
+                action_queue.append(['sendUserNotification', [target_user, 'reward increased by ' + str(amount)]])
+                action_queue.append(['deltaUserStoreByStoreName',[target_user, reward, amount]])
 
         # process boons
-        for boon in event['boon']:
-            amount = random.randint(1, event['boon'][boon]) * -1
-            if boon == 'population':
-                action_queue.append(['sendUserNotification', [target_user, 'population decreased by ' + str(amount)]])
-                action_queue.append(['deltaUserPopulationByID', [target_user, amount]])
+        if event['boon'] is not None:
+            for boon in event['boon']:
+                amount = random.randint(1, event['boon'][boon]) * -1
+                if boon == 'population':
+                    action_queue.append(['sendUserNotification', [target_user, 'population decreased by ' + str(amount)]])
+                    action_queue.append(['deltaUserPopulationByID', [target_user, amount]])
 
         self.process_action_queue(action_queue)
 
