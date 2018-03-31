@@ -140,7 +140,7 @@ class StoryTeller:
                 logging.debug('reported user population: ' + str(user_population))
                 if user_population >= min_required_pop:
                     requirement_check = True
+
         if requirement_check is True:
             return new_event
-
         return None
