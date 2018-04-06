@@ -1,5 +1,6 @@
 import logging
 import random
+import json
 
 class StoryTeller:
 
@@ -191,14 +192,14 @@ class StoryTeller:
                 }
             },
             {
-                'title': 'Racoon Attack',
+                'title': 'Raccoon Attack',
                 'requirements': {
                     'population': 5
                 },
                 'text': [
                     'Hissing and screaming the raccoon attacks',
-                    'Weilding a pike, it attacked from atop its',
-                    'magestic human mount.'
+                    'Wielding a pike, it attacked from atop its',
+                    'majestic human mount.'
                 ],
                 'notification': '',
                 'reward': {
@@ -224,10 +225,10 @@ class StoryTeller:
                     'population': 1
                 },
                 'text': [
-                    'A grate shock wave rolled over the town, breaking everyting of questionbable assemble.',
-                    'A short time later, that awful sound followed, so loud some of us never recovered',
+                    'A great shock wave rolled over the town, breaking everything of questionable assembly.',
+                    'A short time later, that awful sound followed, so loud some of us never fully recovered',
                     'our hearing.',
-                    'Days later some refugees from that far off disaster arrived.  Blisted, burned, and rotting.'
+                    'Days later some refugees from that far off disaster arrived.  Blisted, and burned.'
                 ],
                 'notification': 'hello?  hello!  I still cant hear anything, ugh.',
                 'reward': {
@@ -315,19 +316,19 @@ class StoryTeller:
                 }
             },
             {
-                'title': 'Kidknapping',
+                'title': 'Kidnapping',
                 'requirements': {
                     'population': 1
                 },
                 'text': [
-                    'a local street urchin has been remoted missing.'
+                    'a local street urchin has been reported missing.'
                 ],
                 'boon': {
                     'population': 1
                 }
             },
             {
-                'title': 'Kidknapping of Two',
+                'title': 'Kidnapping of Two',
                 'requirements': {
                     'population': 2
                 },
@@ -344,11 +345,8 @@ class StoryTeller:
                     'population': 30
                 },
                 'text': [
-                    'a group of slavers attack early in the morning.',
-                    '',
-                    ''
+                    'a group of slavers attack early in the morning.'
                 ],
-                'notification': '',
                 'boon': {
                     'population': 30
                 }
@@ -395,4 +393,6 @@ class StoryTeller:
                 new_event = None
                 requirement_check = True
 
+        # remove the requirements stanza before we send to over to the client
+        del new_event['requirements']
         return new_event

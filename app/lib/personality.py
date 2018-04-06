@@ -87,9 +87,6 @@ class Personality:
         action_queue = []
         user_stores = self.get_user_stores(target_user)
 
-        # Send them the whole event object.
-        action_queue.append(['sendUserNotification', [target_user, json.dumps(event)]])
-
         # process rewards
         if 'reward' in event:
             for reward in event['reward']:
@@ -97,13 +94,14 @@ class Personality:
 
                 if reward == 'population':
                     action_queue.append(['deltaUserPopulationByID', [target_user, amount]])
+                    event['reward'][reward] = amount
                 else:
                     if reward in user_stores:
                         store_amt = user_stores[reward]
                         if store_amt < amount:
                             amount = store_amt
-
-                    action_queue.append(['deltaUserStoreByStoreName', [target_user, reward, amount]])
+                        action_queue.append(['deltaUserStoreByStoreName', [target_user, reward, amount]])
+                        event['reward'][reward] = amount
 
         # process boons
         if 'boon' in event:
@@ -113,6 +111,7 @@ class Personality:
                     if self.get_user_population(target_user) < pop_amount:
                         pop_amount = self.get_user_population(target_user)
                     action_queue.append(['deltaUserPopulationByID', [target_user, (pop_amount * -1)]])
+                    event['boon'][boon] = pop_amount
                 else:
                     amount = random.randint(1, event['boon'][boon])
                     if boon in user_stores:
@@ -120,6 +119,10 @@ class Personality:
                         if store_amt < amount:
                             amount = store_amt
                     action_queue.append(['deltaUserStoreByStoreName', [target_user, boon, (amount * -1)]])
+                    event['boon'][boon] = amount
+
+        # Send them the whole event object.
+        action_queue.append(['sendUserNotification', [target_user, json.dumps(event)]])
 
         self.process_action_queue(action_queue)
 
