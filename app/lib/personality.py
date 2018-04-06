@@ -6,6 +6,7 @@ from mysql.connector import pooling
 from mysql.connector import errorcode
 import random
 import time
+import json
 
 import storyteller
 
@@ -86,27 +87,15 @@ class Personality:
         action_queue = []
         user_stores = self.get_user_stores(target_user)
 
-        # add the event title
-        if event['title'] is not None:
-            action_queue.append(['sendUserNotification', [target_user, event['title']]])
-
-        # process and add event text
-        if 'text' in event:
-            for line in event['text']:
-                action_queue.append(['sendUserNotification', [target_user, line]])
-
-        # add event notification
-        if 'notification' in event:
-            action_queue.append(['sendUserNotification', [target_user, event['notification']]])
+        # Send them the whole event object.
+        action_queue.append(['sendUserNotification', [target_user, json.dumps(event)]])
 
         # process rewards
         if 'reward' in event:
             for reward in event['reward']:
                 amount = random.randint(1, event['reward'][reward])
-                # logging.debug('should process reward ' + reward + ': ' + str(amount))
 
                 if reward == 'population':
-                    action_queue.append(['sendUserNotification', [target_user, 'population increased by ' + str(amount)]])
                     action_queue.append(['deltaUserPopulationByID', [target_user, amount]])
                 else:
                     if reward in user_stores:
@@ -114,8 +103,6 @@ class Personality:
                         if store_amt < amount:
                             amount = store_amt
 
-                    action_queue.append(
-                        ['sendUserNotification', [target_user, reward + ' increased by ' + str(amount)]])
                     action_queue.append(['deltaUserStoreByStoreName', [target_user, reward, amount]])
 
         # process boons
@@ -125,7 +112,6 @@ class Personality:
                     pop_amount = random.randint(1, event['boon'][boon])
                     if self.get_user_population(target_user) < pop_amount:
                         pop_amount = self.get_user_population(target_user)
-                    action_queue.append(['sendUserNotification', [target_user, 'population decreased by ' + str(pop_amount)]])
                     action_queue.append(['deltaUserPopulationByID', [target_user, (pop_amount * -1)]])
                 else:
                     amount = random.randint(1, event['boon'][boon])
@@ -133,8 +119,6 @@ class Personality:
                         store_amt = user_stores[boon]
                         if store_amt < amount:
                             amount = store_amt
-                    action_queue.append(
-                        ['sendUserNotification', [target_user, boon + ' decreased by ' + str(amount)]])
                     action_queue.append(['deltaUserStoreByStoreName', [target_user, boon, (amount * -1)]])
 
         self.process_action_queue(action_queue)

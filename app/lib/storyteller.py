@@ -231,7 +231,7 @@ class StoryTeller:
                 ],
                 'notification': 'hello?  hello!  I still cant hear anything, ugh.',
                 'reward': {
-                    'population': 30,
+                    'population': 20,
                     'sulphur': 3,
                     'coins': 20,
                     'gems': 10,
@@ -273,6 +273,97 @@ class StoryTeller:
                     'rifle': 1,
                     'grenade': 2
                 }
+            },
+            {
+                'title': 'A Quite Death',
+                'requirements': {
+                    'population': 1
+                },
+                'text': [
+                    'All trails lead to the meadow at the end of the forest.'
+                ],
+                'boon': {
+                    'population': 1
+                }
+            },
+            {
+                'title': 'Bait Rot',
+                'requirements': {
+                    'bait': 10000
+                },
+                'text': [
+                    'the bait has gone bad.'
+                ],
+                'boon': {
+                    'bait': 10000
+                }
+            },
+            {
+                'title': 'Wet Store Houses',
+                'requirements': {
+                    'population': 200
+                },
+                'text': [
+                    'some of the store houses had leaky roofs'
+                ],
+                'boon': {
+                    'meat': 10000,
+                    'meatpie': 10000,
+                    'cured meat': 10000,
+                    'seed': 10000,
+                    'crops': 10000
+                }
+            },
+            {
+                'title': 'Kidknapping',
+                'requirements': {
+                    'population': 1
+                },
+                'text': [
+                    'a local street urchin has been remoted missing.'
+                ],
+                'boon': {
+                    'population': 1
+                }
+            },
+            {
+                'title': 'Kidknapping of Two',
+                'requirements': {
+                    'population': 2
+                },
+                'text': [
+                    'a local family looses children'
+                ],
+                'boon': {
+                    'population': 2
+                }
+            },
+            {
+                'title': 'Slaver Attack',
+                'requirements': {
+                    'population': 30
+                },
+                'text': [
+                    'a group of slavers attack early in the morning.',
+                    '',
+                    ''
+                ],
+                'notification': '',
+                'boon': {
+                    'population': 30
+                }
+            },
+            {
+                'title': 'Slaver Raid',
+                'requirements': {
+                    'population': 100
+                },
+                'text': [
+                    'a group of slavers raid in the middle of the night.'
+                ],
+                'boon': {
+                    'population': 100
+                }
             }
         ]
     }
@@ -295,6 +386,9 @@ class StoryTeller:
                     # logging.debug('reported user population: ' + str(user_population))
                     if user_population >= min_required_pop:
                         requirement_check = True
+
+                # TODO: This should also be checking stores!  :P
+
 
             # bail out if we've reached out max, i guess they get a boring time..
             if counter >= self.MAX_ENCOUNTER_TRIES:
