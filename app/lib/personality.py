@@ -103,23 +103,23 @@ class Personality:
                         action_queue.append(['deltaUserStoreByStoreName', [target_user, reward, amount]])
                         event['reward'][reward] = amount
 
-        # process boons
-        if 'boon' in event:
-            for boon in event['boon']:
-                if boon == 'population':
-                    pop_amount = random.randint(1, event['boon'][boon])
+        # process curses
+        if 'curse' in event:
+            for curse in event['curse']:
+                if curse == 'population':
+                    pop_amount = random.randint(1, event['curse'][curse])
                     if self.get_user_population(target_user) < pop_amount:
                         pop_amount = self.get_user_population(target_user)
                     action_queue.append(['deltaUserPopulationByID', [target_user, (pop_amount * -1)]])
-                    event['boon'][boon] = pop_amount
+                    event['curse'][curse] = pop_amount
                 else:
-                    amount = random.randint(1, event['boon'][boon])
-                    if boon in user_stores:
-                        store_amt = user_stores[boon]
+                    amount = random.randint(1, event['curse'][curse])
+                    if curse in user_stores:
+                        store_amt = user_stores[curse]
                         if store_amt < amount:
                             amount = store_amt
-                    action_queue.append(['deltaUserStoreByStoreName', [target_user, boon, (amount * -1)]])
-                    event['boon'][boon] = amount
+                    action_queue.append(['deltaUserStoreByStoreName', [target_user, curse, (amount * -1)]])
+                    event['curse'][curse] = amount
 
         # Send them the whole event object.
         action_queue.append(['sendUserNotification', [target_user, json.dumps(event)]])

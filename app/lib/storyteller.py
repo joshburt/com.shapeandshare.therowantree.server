@@ -71,7 +71,7 @@ class StoryTeller:
                 'text': [
                     'all residents in the hut perished in the fire.'
                 ],
-                'boon': {
+                'curse': {
                     'population': 10
                 }
             },
@@ -84,7 +84,7 @@ class StoryTeller:
                     'the nights are rent with screams.',
                     'the only hope is a quick death.'
                 ],
-                'boon': {
+                'curse': {
                     'population': 15
                 }
             },
@@ -97,7 +97,7 @@ class StoryTeller:
                     'only a few die.',
                     'the rest bury them.'
                 ],
-                'boon': {
+                'curse': {
                     'population': 10
                 }
             },
@@ -106,7 +106,7 @@ class StoryTeller:
                 'requirements': {
                     'population': 6
                 },
-                'boon': {
+                'curse': {
                     'population': 3
                 }
             },
@@ -126,7 +126,7 @@ class StoryTeller:
                     'meat': 100,
                     'teeth': 10
                 },
-                'boon': {
+                'curse': {
                     'population': 10
                 }
             },
@@ -144,7 +144,7 @@ class StoryTeller:
                     'gems': 1,
                     'coins': 10
                 },
-                'boon': {
+                'curse': {
                     'population': 1
                 }
             },
@@ -166,7 +166,7 @@ class StoryTeller:
                     'meat': 10,
                     'teeth': 10
                 },
-                'boon': {
+                'curse': {
                     'population': 5
                 }
             },
@@ -188,7 +188,7 @@ class StoryTeller:
                     'meat': 10,
                     'teeth': 10
                 },
-                'boon': {
+                'curse': {
                     'population': 10
                 }
             },
@@ -216,7 +216,7 @@ class StoryTeller:
                     'torch': 5,
                     'bone spear': 1
                 },
-                'boon': {
+                'curse': {
                     'population': 2,
                 }
             },
@@ -239,7 +239,7 @@ class StoryTeller:
                     'gems': 10,
                     'medicine': 5
                 },
-                'boon': {
+                'curse': {
                     'population': 5,
                     'sulphur': 2,
                     'bait': 5,
@@ -284,7 +284,7 @@ class StoryTeller:
                 'text': [
                     'All trails lead to the meadow at the end of the forest.'
                 ],
-                'boon': {
+                'curse': {
                     'population': 1
                 }
             },
@@ -296,7 +296,7 @@ class StoryTeller:
                 'text': [
                     'the bait has gone bad.'
                 ],
-                'boon': {
+                'curse': {
                     'bait': 10000
                 }
             },
@@ -308,7 +308,7 @@ class StoryTeller:
                 'text': [
                     'some of the store houses had leaky roofs'
                 ],
-                'boon': {
+                'curse': {
                     'meat': 10000,
                     'meatpie': 10000,
                     'cured meat': 10000,
@@ -324,7 +324,7 @@ class StoryTeller:
                 'text': [
                     'a local street urchin has been reported missing.'
                 ],
-                'boon': {
+                'curse': {
                     'population': 1
                 }
             },
@@ -336,7 +336,7 @@ class StoryTeller:
                 'text': [
                     'a local family looses children'
                 ],
-                'boon': {
+                'curse': {
                     'population': 2
                 }
             },
@@ -348,7 +348,7 @@ class StoryTeller:
                 'text': [
                     'a group of slavers attack early in the morning.'
                 ],
-                'boon': {
+                'curse': {
                     'population': 30
                 }
             },
@@ -360,7 +360,7 @@ class StoryTeller:
                 'text': [
                     'a group of slavers raid in the middle of the night.'
                 ],
-                'boon': {
+                'curse': {
                     'population': 100
                 }
             }
