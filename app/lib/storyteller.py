@@ -1,6 +1,7 @@
 import logging
 import random
 import json
+import copy
 
 class StoryTeller:
 
@@ -376,23 +377,31 @@ class StoryTeller:
             counter += 1
             event_index = random.randint(1, num_events) - 1
             new_event = self.events['global'][event_index]
+            try:
+                # check requirements
+                for requirement in new_event['requirements']:
+                    if requirement == 'population':
+                        min_required_pop = new_event['requirements'][requirement]
+                        # logging.debug('reported user population: ' + str(user_population))
+                        if user_population >= min_required_pop:
+                            requirement_check = True
 
-            # check requirements
-            for requirement in new_event['requirements']:
-                if requirement == 'population':
-                    min_required_pop = new_event['requirements'][requirement]
-                    # logging.debug('reported user population: ' + str(user_population))
-                    if user_population >= min_required_pop:
-                        requirement_check = True
-
-                # TODO: This should also be checking stores!  :P
-
+                    # TODO: This should also be checking stores!  :P
+            except:
+                logging.debug('exception caught')
+                logging.debug('counter: ' + str(counter))
+                logging.debug('event_index: ' + str(event_index))
+                logging.debug('new_event: ' + str(new_event))
 
             # bail out if we've reached out max, i guess they get a boring time..
             if counter >= self.MAX_ENCOUNTER_TRIES:
                 new_event = None
                 requirement_check = True
 
+        if new_event is None:
+            return None
+
         # remove the requirements stanza before we send to over to the client
-        del new_event['requirements']
-        return new_event
+        outbound_event = copy.deepcopy(new_event)
+        del outbound_event['requirements']
+        return outbound_event
