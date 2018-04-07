@@ -277,7 +277,7 @@ class StoryTeller:
                 }
             },
             {
-                'title': 'A Quite Death',
+                'title': 'A Quiet Death',
                 'requirements': {
                     'population': 1
                 },
