@@ -12,7 +12,8 @@ import storyteller
 
 class Personality:
 
-    MAX_NAPPY_TIME = 10 # in seconds
+    MAX_NAPPY_TIME = 2 # in seconds
+    ENCOUNTER_CHANGE = 100 # in percent
 
     def __init__(self, cnxpool):
         self.cnxpool = cnxpool
@@ -30,7 +31,7 @@ class Personality:
         self.slumber()
 
     def encounter(self, target_user):
-        if self.luck(10) is True:
+        if self.luck(self.ENCOUNTER_CHANGE) is True:
             user_stores = self.get_user_stores(target_user)
             event = self.loremaster.generateEvent(self.get_user_population(target_user), user_stores)
             self.process_user_event(event, target_user)
