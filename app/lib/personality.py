@@ -12,7 +12,7 @@ import storyteller
 
 class Personality:
 
-    MAX_NAPPY_TIME = 2 # in seconds
+    MAX_NAPPY_TIME = 3 # in seconds
     ENCOUNTER_CHANGE = 100 # in percent
 
     def __init__(self, cnxpool):
