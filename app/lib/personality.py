@@ -31,7 +31,8 @@ class Personality:
 
     def encounter(self, target_user):
         if self.luck(10) is True:
-            event = self.loremaster.generateEvent(self.get_user_population(target_user))
+            user_stores = self.get_user_stores(target_user)
+            event = self.loremaster.generateEvent(self.get_user_population(target_user), user_stores)
             self.process_user_event(event, target_user)
 
     def slumber(self):

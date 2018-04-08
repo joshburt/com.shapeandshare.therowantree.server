@@ -367,7 +367,7 @@ class StoryTeller:
         ]
     }
 
-    def generateEvent(self, user_population):
+    def generateEvent(self, user_population, user_stores):
         num_events = len(self.events['global'])
         requirement_check = False
         counter = 0
@@ -385,8 +385,13 @@ class StoryTeller:
                         # logging.debug('reported user population: ' + str(user_population))
                         if user_population >= min_required_pop:
                             requirement_check = True
-
-                    # TODO: This should also be checking stores!  :P
+                    else:
+                        # assume it is a store
+                        # get the current amount of a the store for the user
+                        min_required_store = new_event['requirements'][requirement]
+                        if user_stores[requirement]:
+                            if user_stores[requirement] >= min_required_store:
+                                requirement_check = True
             except:
                 logging.debug('exception caught')
                 logging.debug('counter: ' + str(counter))
