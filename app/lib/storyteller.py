@@ -279,7 +279,7 @@ class StoryTeller:
             {
                 'title': 'A Quiet Death',
                 'requirements': {
-                    'population': 1
+                    'population': 5
                 },
                 'text': [
                     'All trails lead to the meadow at the end of the forest.'
@@ -360,6 +360,59 @@ class StoryTeller:
                 'text': [
                     'a group of slavers raid in the middle of the night.'
                 ],
+                'curse': {
+                    'population': 100
+                }
+            },
+            {
+                'title': 'Raccon Spy',
+                'requirements': {
+                    'population': 100
+                },
+                'text': [
+                    'it was on the outskirts for days, it kept coming back',
+                    'after being chased off.  we knew it was trouble.'
+                ],
+                'curse': {
+                    'bait': 5000,
+                    'meat': 10000,
+                    'meatpie': 5000,
+                    'cured meat': 50000,
+                    'cloth': 1000,
+                    'coins': 1000,
+                    'gems': 200,
+                    'charm': 10,
+                    'seed': 1000,
+                    'crops': 10000,
+                    'bone spear': 5000
+                }
+            },
+            {
+                'title': 'Fire At The Lumber Yard',
+                'requirements': {
+                    'wood': 10000
+                },
+                'text': [
+                    'it burned with terrible bright light that night'
+                ],
+                'curse': {
+                    'population': 10,
+                    'wood': 10000
+                }
+            },
+            {
+                'title': 'Radioactive Artifact',
+                'requirements': {
+                    'population': 100
+                },
+                'text': [
+                    'such a small thing.',
+                    'so innocent looking and beautiful.',
+                    'warm even, to the touch.'
+                ],
+                'reward': {
+                    'charm': 2
+                },
                 'curse': {
                     'population': 100
                 }
