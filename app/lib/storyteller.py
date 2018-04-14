@@ -416,6 +416,15 @@ class StoryTeller:
                 'curse': {
                     'population': 100
                 }
+            },
+            {
+                'title': 'dazed and confused, a ragged women emerges from the dark forest',
+                'requirements': {
+                    'population': 1
+                },
+                'reward': {
+                    'population': 1
+                }
             }
         ]
     }
