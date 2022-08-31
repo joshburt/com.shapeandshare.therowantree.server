@@ -1,23 +1,24 @@
-import logging
 import errno
-import socket
-import mysql.connector
-from mysql.connector import pooling
-from mysql.connector import errorcode
-import random
-import time
 import json
+import logging
+import random
+import socket
+import time
 
-import storyteller
+import mysql.connector
+from mysql.connector import errorcode, pooling
+
+from .storyteller import StoryTeller
+
 
 class Personality:
 
-    MAX_NAPPY_TIME = 3 # in seconds
-    ENCOUNTER_CHANCE = 100 # in percent
+    MAX_NAPPY_TIME = 3  # in seconds
+    ENCOUNTER_CHANCE = 100  # in percent
 
     def __init__(self, cnxpool):
         self.cnxpool = cnxpool
-        self.loremaster = storyteller.StoryTeller()
+        self.loremaster = StoryTeller()
 
     def contemplate(self):
         # get active users
@@ -47,21 +48,31 @@ class Personality:
     ##############
     def get_active_users(self):
         my_active_users = []
-        rows = self.callProc('getActiveUsers', [])
+        rows = self.callProc("getActiveUsers", [])
         for tuple in rows:
             my_active_users.append(tuple[0])
         return my_active_users
 
     def get_user_population(self, target_user):
         user_population = None
-        rows = self.callProc('getUserPopulationByID', [target_user,])
+        rows = self.callProc(
+            "getUserPopulationByID",
+            [
+                target_user,
+            ],
+        )
         for tuple in rows:
             user_population = tuple[0]
         return user_population
 
     def get_user_stores(self, target_user):
         user_stores = {}
-        rows = self.callProc('getUserStoresByID', [target_user,])
+        rows = self.callProc(
+            "getUserStoresByID",
+            [
+                target_user,
+            ],
+        )
         for tuple in rows:
             user_stores[tuple[0]] = tuple[2]
         return user_stores
@@ -90,41 +101,41 @@ class Personality:
         user_stores = self.get_user_stores(target_user)
 
         # process rewards
-        if 'reward' in event:
-            for reward in event['reward']:
-                amount = random.randint(1, event['reward'][reward])
+        if "reward" in event:
+            for reward in event["reward"]:
+                amount = random.randint(1, event["reward"][reward])
 
-                if reward == 'population':
-                    action_queue.append(['deltaUserPopulationByID', [target_user, amount]])
-                    event['reward'][reward] = amount
+                if reward == "population":
+                    action_queue.append(["deltaUserPopulationByID", [target_user, amount]])
+                    event["reward"][reward] = amount
                 else:
                     if reward in user_stores:
                         store_amt = user_stores[reward]
                         if store_amt < amount:
                             amount = store_amt
-                        action_queue.append(['deltaUserStoreByStoreName', [target_user, reward, amount]])
-                        event['reward'][reward] = amount
+                        action_queue.append(["deltaUserStoreByStoreName", [target_user, reward, amount]])
+                        event["reward"][reward] = amount
 
         # process curses
-        if 'curse' in event:
-            for curse in event['curse']:
-                if curse == 'population':
-                    pop_amount = random.randint(1, event['curse'][curse])
+        if "curse" in event:
+            for curse in event["curse"]:
+                if curse == "population":
+                    pop_amount = random.randint(1, event["curse"][curse])
                     if self.get_user_population(target_user) < pop_amount:
                         pop_amount = self.get_user_population(target_user)
-                    action_queue.append(['deltaUserPopulationByID', [target_user, (pop_amount * -1)]])
-                    event['curse'][curse] = pop_amount
+                    action_queue.append(["deltaUserPopulationByID", [target_user, (pop_amount * -1)]])
+                    event["curse"][curse] = pop_amount
                 else:
-                    amount = random.randint(1, event['curse'][curse])
+                    amount = random.randint(1, event["curse"][curse])
                     if curse in user_stores:
                         store_amt = user_stores[curse]
                         if store_amt < amount:
                             amount = store_amt
-                    action_queue.append(['deltaUserStoreByStoreName', [target_user, curse, (amount * -1)]])
-                    event['curse'][curse] = amount
+                    action_queue.append(["deltaUserStoreByStoreName", [target_user, curse, (amount * -1)]])
+                    event["curse"][curse] = amount
 
         # Send them the whole event object.
-        action_queue.append(['sendUserNotification', [target_user, json.dumps(event)]])
+        action_queue.append(["sendUserNotification", [target_user, json.dumps(event)]])
 
         self.process_action_queue(action_queue)
 
@@ -137,7 +148,7 @@ class Personality:
             for result in cursor.stored_results():
                 rows = result.fetchall()
             cursor.close()
-        except socket.error, e:
+        except socket.error as e:
             logging.debug(e)
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
