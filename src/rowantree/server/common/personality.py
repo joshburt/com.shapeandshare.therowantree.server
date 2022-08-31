@@ -3,7 +3,7 @@ import random
 import time
 from typing import Any, Optional
 
-from .db_dao import DBDAO
+from ..db.dao import DBDAO
 from .storyteller import StoryTeller
 
 
@@ -54,6 +54,8 @@ class Personality:
     ## Event Queueing
     ##############
 
+    # TODO: Review the complexity of this
+    # pylint: disable=too-many-branches
     def _process_user_event(self, event: Optional[Any], target_user: str) -> None:
         if event is None:
             return

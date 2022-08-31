@@ -1,5 +1,4 @@
 import copy
-import logging
 import random
 from typing import Any, Optional
 
@@ -8,6 +7,7 @@ class StoryTeller:
 
     MAX_ENCOUNTER_TRIES = 10
 
+    # pylint: disable=line-too-long
     events = {
         "global": [
             {
@@ -274,28 +274,22 @@ class StoryTeller:
             counter += 1
             event_index = random.randint(1, num_events) - 1
             new_event = self.events["global"][event_index]
-            try:
-                # check requirements
-                for requirement in new_event["requirements"]:
-                    if requirement == "population":
-                        min_required_pop = new_event["requirements"][requirement]
-                        # logging.debug('reported user population: ' + str(user_population))
-                        if user_population >= min_required_pop:
-                            requirement_check = True
-                    else:
-                        # assume it is a store
-                        # get the current amount of a the store for the user
-                        min_required_store = new_event["requirements"][requirement]
-                        if user_stores[requirement]:
-                            if user_stores[requirement] >= min_required_store:
-                                requirement_check = True
-            except:
-                logging.debug("exception caught")
-                logging.debug("counter: " + str(counter))
-                logging.debug("event_index: " + str(event_index))
-                logging.debug("new_event: " + str(new_event))
 
-            # bail out if we've reached out max, i guess they get a boring time..
+            # check requirements
+            for requirement in new_event["requirements"]:
+                if requirement == "population":
+                    min_required_pop = new_event["requirements"][requirement]
+                    # logging.debug('reported user population: ' + str(user_population))
+                    if user_population >= min_required_pop:
+                        requirement_check = True
+                else:
+                    # assume it is a store - get the current amount of the store for the user
+                    min_required_store = new_event["requirements"][requirement]
+                    if requirement in user_stores:
+                        if user_stores[requirement] >= min_required_store:
+                            requirement_check = True
+
+            # bail out if we've reached the max, no encounters this time
             if counter >= self.MAX_ENCOUNTER_TRIES:
                 new_event = None
                 requirement_check = True
