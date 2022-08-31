@@ -1,5 +1,5 @@
 [command]
-timeout=60
+timeout=500
 
 [config]
 type=config

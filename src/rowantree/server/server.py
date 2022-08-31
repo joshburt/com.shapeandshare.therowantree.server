@@ -1,58 +1,50 @@
-import errno
 import logging
 import os
-import random
 import socket
-import time
+from pathlib import Path
 
 import mysql.connector
 from mysql.connector import errorcode, pooling
 
-from src.rowantree.server.config import docker as config
-from src.rowantree.server.lib.personality import Personality
-
-# https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
-def make_sure_path_exists(path):
-    try:
-        if os.path.exists(path) is False:
-            os.makedirs(path)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
-
-
-# Setup logging.
-make_sure_path_exists(config.LOGS_DIR)
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%m/%d/%Y %I:%M:%S %p",
-    level=logging.DEBUG,
-    filemode="w",
-    filename="%s/%s.therowantree.server.log" % (config.LOGS_DIR, os.uname()[1]),
-)
-
-try:
-    cnxpool = pooling.MySQLConnectionPool(
-        pool_name="servercnxpool",
-        pool_size=32,
-        user=config.API_DATABASE_USERNAME,
-        password=config.API_DATABASE_PASSWORD,
-        host=config.API_DATABASE_SERVER,
-        database=config.API_DATABASE_NAME,
-    )
-except socket.error as e:
-    logging.debug(e)
-except mysql.connector.Error as err:
-    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-        logging.debug("Something is wrong with your user name or password")
-    elif err.errno == errorcode.ER_BAD_DB_ERROR:
-        logging.debug("Database does not exist")
-    else:
-        logging.debug(err)
-
+from .common.db_dao import DBDAO
+from .common.personality import Personality
+from .config.server import ServerConfig
 
 if __name__ == "__main__":
-    logging.debug("starting.")
-    me = Personality(cnxpool)
-    while True:
-        me.contemplate()
+    config: ServerConfig = ServerConfig()
+    # Setup logging
+    Path(config.log_dir).mkdir(parents=True, exist_ok=True)
+    logging.basicConfig(
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%m/%d/%Y %I:%M:%S %p",
+        level=logging.DEBUG,
+        filemode="w",
+        filename="%s/%s.therowantree.server.log" % (config.log_dir, os.uname()[1]),
+    )
+    logging.debug("Starting server")
+
+    try:
+        logging.debug("Connecting to database")
+        cnxpool = pooling.MySQLConnectionPool(
+            pool_name="servercnxpool",
+            pool_size=32,
+            user=config.api_database_username,
+            password=config.api_database_password,
+            host=config.api_database_server,
+            database=config.api_database_name,
+        )
+
+        logging.debug("Creating personality")
+        me = Personality(dao=DBDAO(cnxpool=cnxpool))
+        logging.debug("Starting contemplation loop")
+        while True:
+            me.contemplate()
+    except socket.error as error:
+        logging.debug(error)
+    except mysql.connector.Error as error:
+        if error.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            logging.debug("Something is wrong with your user name or password")
+        elif error.errno == errorcode.ER_BAD_DB_ERROR:
+            logging.debug("Database does not exist")
+        else:
+            logging.debug(error)

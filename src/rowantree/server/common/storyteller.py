@@ -1,7 +1,7 @@
 import copy
-import json
 import logging
 import random
+from typing import Any, Optional
 
 
 class StoryTeller:
@@ -264,11 +264,11 @@ class StoryTeller:
         ]
     }
 
-    def generateEvent(self, user_population, user_stores):
-        num_events = len(self.events["global"])
-        requirement_check = False
-        counter = 0
-        new_event = None
+    def generate_event(self, user_population, user_stores) -> Optional[Any]:
+        num_events: int = len(self.events["global"])
+        requirement_check: bool = False
+        counter: int = 0
+        new_event: Optional[Any] = None
 
         while requirement_check is False:
             counter += 1
