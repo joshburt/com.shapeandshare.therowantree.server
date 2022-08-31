@@ -1,11 +1,13 @@
-FROM python:2.7
+FROM python:3.9
 
-WORKDIR /app
+RUN pip install --upgrade pip
 
-COPY ./app /app
+ADD dist/rowantree.server*.whl /tmp/install/
+ADD requirements.txt /tmp/install/
 
-RUN pip install -r requirements.txt \
-    && useradd -M -U -u 1000 trt_server_srv \
-    && chown -R trt_server_srv /app
+RUN pip install -r /tmp/install/requirements.txt
+RUN pip install /tmp/install/*.whl
 
-ENTRYPOINT ["python", "./server.py"]
+ADD rowantree.config /
+
+ENTRYPOINT ["python", "-m", "rowantree.server.server"]
