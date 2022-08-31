@@ -8,12 +8,8 @@ import time
 import mysql.connector
 from mysql.connector import errorcode, pooling
 
-from src.rowantree.server.config import docker_config as config
+from src.rowantree.server.config import docker as config
 from src.rowantree.server.lib.personality import Personality
-
-# import lib.docker_config as config
-# import lib.personality
-# import .lib.docker_config as config
 
 # https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
 def make_sure_path_exists(path):

@@ -1,7 +1,7 @@
 import configparser
 
 my_config = configparser.ConfigParser()
-configFilePath = r"./therowantree.config"
+configFilePath = r"./rowantree.config"
 my_config.read(configFilePath)
 
 ###############################################################################
