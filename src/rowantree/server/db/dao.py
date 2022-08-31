@@ -2,10 +2,11 @@
 
 import logging
 import socket
-from typing import Any, Optional, Tuple
+from typing import Any, Tuple
 
 import mysql.connector
-from mysql.connector import errorcode, pooling
+from mysql.connector import errorcode
+from mysql.connector.pooling import MySQLConnectionPool
 
 
 class DBDAO:
@@ -18,9 +19,9 @@ class DBDAO:
         MySQL Connection Pool
     """
 
-    cnxpool: Any
+    cnxpool: MySQLConnectionPool
 
-    def __init__(self, cnxpool):
+    def __init__(self, cnxpool: MySQLConnectionPool):
         self.cnxpool = cnxpool
 
     def get_active_users(self) -> list[str]:
@@ -30,17 +31,14 @@ class DBDAO:
             my_active_users.append(response_tuple[0])
         return my_active_users
 
-    def get_user_population(self, target_user) -> Optional[int]:
-        user_population: Optional[int] = None
+    def get_user_population(self, target_user) -> int:
         rows: list[Tuple] = self._call_proc(
             "getUserPopulationByID",
             [
                 target_user,
             ],
         )
-        for response_tuple in rows:
-            user_population = response_tuple[0]
-        return user_population
+        return rows[0][0]
 
     def get_user_stores(self, target_user) -> dict[str, Any]:
         user_stores: dict[str, Any] = {}
@@ -59,8 +57,8 @@ class DBDAO:
         for action in action_queue:
             self._call_proc(action[0], action[1])
 
-    def _call_proc(self, name, args) -> Optional[list[Tuple]]:
-        rows: Optional[list[Tuple]] = None
+    def _call_proc(self, name, args) -> list[Tuple]:
+        rows: list[Tuple] = []
         try:
             cnx = self.cnxpool.get_connection()
             cursor = cnx.cursor()
@@ -79,4 +77,8 @@ class DBDAO:
                 logging.debug(err)
         else:
             cnx.close()
+
+        if rows is None:
+            raise "Failure getting database information"
+
         return rows
