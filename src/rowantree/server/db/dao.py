@@ -66,8 +66,8 @@ class DBDAO:
             for result in cursor.stored_results():
                 rows = result.fetchall()
             cursor.close()
-        except socket.error as e:
-            logging.debug(e)
+        except socket.error as error:
+            logging.debug(error)
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 logging.debug("Something is wrong with your user name or password")
@@ -79,6 +79,6 @@ class DBDAO:
             cnx.close()
 
         if rows is None:
-            raise "Failure getting database information"
+            raise Exception("Failure getting database information")
 
         return rows

@@ -20,7 +20,7 @@ if __name__ == "__main__":
         datefmt="%m/%d/%Y %I:%M:%S %p",
         level=logging.DEBUG,
         filemode="w",
-        filename="%s/%s.therowantree.server.log" % (config.log_dir, os.uname()[1]),
+        filename=f"{config.log_dir}/{os.uname()[1]}.therowantree.server.log",
     )
 
     logging.debug("Starting server")

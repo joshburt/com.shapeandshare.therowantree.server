@@ -1,5 +1,4 @@
 import copy
-import logging
 import random
 from typing import Any, Optional
 
@@ -8,6 +7,7 @@ class StoryTeller:
 
     MAX_ENCOUNTER_TRIES = 10
 
+    # pylint: disable=line-too-long
     events = {
         "global": [
             {

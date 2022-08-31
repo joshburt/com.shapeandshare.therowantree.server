@@ -13,7 +13,7 @@ class ServerConfig(BaseModel):
     database_username: Optional[str]
     database_password: Optional[str]
 
-    def __init__(self, config_file_path: str = "rowantree.config", *args, **kwargs):
+    def __init__(self, *args, config_file_path: str = "rowantree.config", **kwargs):
         super().__init__(*args, **kwargs)
         config = configparser.ConfigParser()
         config.read(config_file_path)
