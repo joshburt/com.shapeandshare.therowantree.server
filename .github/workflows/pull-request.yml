@@ -36,14 +36,14 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        npm ci
-        npm run prebuild
+        python -m pip install sacr
+        sacr run prebuild
     - name: Run Auditing
       run: |
-        npm run audit
+        sacr run audit
     - name: Run Linting
       run: |
-        npm run lint
+        sacr run lint
 # TODO: Enable once tests are defined
 #    - name: Run Tests
 #      run: |
