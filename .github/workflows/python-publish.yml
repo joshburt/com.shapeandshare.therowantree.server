@@ -33,7 +33,7 @@ jobs:
         python -m pip install sacr
         sacr run prebuild
     - name: Build package
-      run: python -m sacr run build:wheel
+      run: sacr run build:wheel
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
       with:
