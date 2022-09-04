@@ -2,12 +2,10 @@ import logging
 import os
 from pathlib import Path
 
-from mysql.connector.pooling import MySQLConnectionPool
+from rowantree.service.sdk import RowanTreeService
 
 from .common.personality import Personality
 from .config.server import ServerConfig
-from .db.dao import DBDAO
-from .db.utils import get_connect_pool
 
 if __name__ == "__main__":
     # Generating server configuration
@@ -27,10 +25,7 @@ if __name__ == "__main__":
 
     logging.debug(config.json(by_alias=True, exclude_unset=True))
 
-    # Creating database connection pool
-    cnxpool: MySQLConnectionPool = get_connect_pool(config=config)
-
-    me: Personality = Personality(dao=DBDAO(cnxpool=cnxpool))
+    me: Personality = Personality(rowantree_service=RowanTreeService())
 
     logging.debug("Starting contemplation loop")
     while True:
