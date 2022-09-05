@@ -1,3 +1,5 @@
+""" Story Teller Definition """
+
 import copy
 import random
 from typing import Optional
@@ -6,6 +8,11 @@ from rowantree.contracts import UserPopulation, UserStore, UserStores
 
 
 class StoryTeller:
+    """
+    The Story Teller
+    This class handles world encounters.
+    """
+
     MAX_ENCOUNTER_TRIES = 10
 
     # pylint: disable=line-too-long
@@ -266,6 +273,22 @@ class StoryTeller:
     }
 
     def generate_event(self, user_population: UserPopulation, user_stores: UserStores) -> Optional[dict]:
+        """
+        Generates a world event (encounter).
+
+        Parameters
+        ----------
+        user_population: UserPopulation
+            The target user population.
+        user_stores: UserStores
+            The target user stores.
+
+        Returns
+        -------
+        outbound_event: Optional[dict]
+            An optional encounter for the target user.
+        """
+
         num_events: int = len(self.events["global"])
         requirement_check: bool = False
         counter: int = 0

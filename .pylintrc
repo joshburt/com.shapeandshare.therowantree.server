@@ -87,11 +87,8 @@ confidence=
 #         deprecated-pragma,
 #         use-symbolic-message-instead
 disable=
-    missing-module-docstring,
-    missing-class-docstring,
     no-name-in-module,
     too-few-public-methods,
-    missing-function-docstring,
     fixme
 
 # Enable the message, report, category or checker with the given id(s). You can

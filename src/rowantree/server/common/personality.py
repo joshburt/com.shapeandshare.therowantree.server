@@ -1,8 +1,10 @@
+""" Personality Definition """
+
 import json
 import logging
 import random
 import time
-from typing import Any, Optional
+from typing import Optional
 
 from rowantree.contracts import Action, ActionQueue, UserPopulation, UserStore, UserStores, WorldStatus
 from rowantree.service.sdk import RowanTreeService
@@ -11,6 +13,18 @@ from .storyteller import StoryTeller
 
 
 class Personality:
+    """
+    Personality (Default)
+    Generates game world content.
+
+    Attributes
+    ----------
+    rowantree_service: RowanTreeService
+        The Rowan Tree Service Interface.
+    loremaster: StoryTeller
+        An instance of a story teller for encounter generation.
+    """
+
     rowantree_service: RowanTreeService
     loremaster: StoryTeller
 
@@ -24,6 +38,8 @@ class Personality:
         self.loremaster = StoryTeller()
 
     def contemplate(self) -> None:
+        """Reviews active players, and for content."""
+
         # get active users
         world_status: WorldStatus = self.rowantree_service.world_status_get()
         for target_user in world_status.active_players:
@@ -34,6 +50,15 @@ class Personality:
         self._slumber()
 
     def _encounter(self, target_user: str) -> None:
+        """
+        Cause an encounter.
+
+        Parameters
+        ----------
+        target_user: str
+            The target active user.
+        """
+
         if Personality._luck(odds=self.encounter_change) is True:
             user_stores: UserStores = self.rowantree_service.user_stores_get(user_guid=target_user)
             user_population: UserPopulation = self.rowantree_service.user_population_get(user_guid=target_user)
@@ -43,11 +68,30 @@ class Personality:
             )
             self._process_user_event(event=event, target_user=target_user)
 
-    def _slumber(self):
+    def _slumber(self) -> None:
+        """
+        Sleep wrapper.
+        Sleeps for a random amount of time up to the max.
+        """
+
         time.sleep(random.randint(1, self.max_sleep_time))
 
     @staticmethod
-    def _luck(odds) -> bool:
+    def _luck(odds: int) -> bool:
+        """
+        Probability Sample (should something happen)
+
+        Parameters
+        ----------
+        odds: int
+            Change in percent (up to 100%)
+
+        Returns
+        -------
+        trigger: bool
+            Result of the probability evaluation.
+
+        """
         # Ask only for what you truely need and beware you may be granted your wish.
         flip: int = random.randint(1, 100)
         if flip <= odds:
@@ -60,7 +104,19 @@ class Personality:
 
     # TODO: Review the complexity of this
     # pylint: disable=too-many-branches
-    def _process_user_event(self, event: Optional[Any], target_user: str) -> None:
+    def _process_user_event(self, event: Optional[dict], target_user: str) -> None:
+        """
+        Processes the provided user event (applies the state change of the event)
+
+        Parameters
+        ----------
+        event: Optional[dict]
+            The optional event to process.
+
+        target_user: str
+            The target user guid.
+        """
+
         if event is None:
             return
 
