@@ -1,4 +1,5 @@
 import json
+import logging
 import random
 import time
 from typing import Any, Optional
@@ -77,7 +78,7 @@ class Personality:
                 amount: int = random.randint(1, event["reward"][reward])
 
                 if reward == "population":
-                    action_queue.queue.append(Action(name="deltaUserPopulationByID", arguments=[target_user, amount]))
+                    action_queue.queue.append(Action(name="deltaUserPopulationByGUID", arguments=[target_user, amount]))
                     event["reward"][reward] = amount
                 else:
                     if reward in user_stores_dict:
@@ -86,7 +87,7 @@ class Personality:
                             amount = store_amt
 
                         action_queue.queue.append(
-                            Action(name="deltaUserStoreByStoreName", arguments=[target_user, reward, amount])
+                            Action(name="deltaUserStoreByStoreNameByGUID", arguments=[target_user, reward, amount])
                         )
                         event["reward"][reward] = amount
 
@@ -100,7 +101,7 @@ class Personality:
                         pop_amount: int = user_population.population
 
                     action_queue.queue.append(
-                        Action(name="deltaUserPopulationByID", arguments=[target_user, (pop_amount * -1)])
+                        Action(name="deltaUserPopulationByGUID", arguments=[target_user, (pop_amount * -1)])
                     )
                     event["curse"][curse] = pop_amount
                 else:
@@ -111,11 +112,12 @@ class Personality:
                             amount = store_amt
 
                     action_queue.queue.append(
-                        Action(name="deltaUserStoreByStoreName", arguments=[target_user, curse, (amount * -1)])
+                        Action(name="deltaUserStoreByStoreNameByGUID", arguments=[target_user, curse, (amount * -1)])
                     )
                     event["curse"][curse] = amount
 
         # Send them the whole event object.
-        action_queue.queue.append(Action(name="sendUserNotification", arguments=[target_user, json.dumps(event)]))
+        action_queue.queue.append(Action(name="sendUserNotificationByGUID", arguments=[target_user, json.dumps(event)]))
 
+        logging.debug(action_queue.json(by_alias=True))
         self.rowantree_service.action_queue_process(queue=action_queue)
