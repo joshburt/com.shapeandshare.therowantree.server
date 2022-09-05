@@ -1,10 +1,11 @@
 import copy
 import random
-from typing import Any, Optional
+from typing import Optional
+
+from rowantree.contracts import UserPopulation, UserStore, UserStores
 
 
 class StoryTeller:
-
     MAX_ENCOUNTER_TRIES = 10
 
     # pylint: disable=line-too-long
@@ -264,11 +265,16 @@ class StoryTeller:
         ]
     }
 
-    def generate_event(self, user_population, user_stores) -> Optional[Any]:
+    def generate_event(self, user_population: UserPopulation, user_stores: UserStores) -> Optional[dict]:
         num_events: int = len(self.events["global"])
         requirement_check: bool = False
         counter: int = 0
-        new_event: Optional[Any] = None
+        new_event: Optional[dict] = None
+
+        # convert to dictionary
+        user_stores_dict: dict[str, UserStore] = {}
+        for store in user_stores.stores:
+            user_stores_dict[store.name] = store
 
         while requirement_check is False:
             counter += 1
@@ -280,13 +286,13 @@ class StoryTeller:
                 if requirement == "population":
                     min_required_pop = new_event["requirements"][requirement]
                     # logging.debug('reported user population: ' + str(user_population))
-                    if user_population >= min_required_pop:
+                    if user_population.population >= min_required_pop:
                         requirement_check = True
                 else:
                     # assume it is a store - get the current amount of the store for the user
                     min_required_store = new_event["requirements"][requirement]
-                    if requirement in user_stores:
-                        if user_stores[requirement] >= min_required_store:
+                    if requirement in user_stores_dict:
+                        if user_stores_dict[requirement].amount >= min_required_store:
                             requirement_check = True
 
             # bail out if we've reached the max, no encounters this time

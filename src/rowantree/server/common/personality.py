@@ -1,30 +1,32 @@
 import json
+import logging
 import random
 import time
 from typing import Any, Optional
 
-from ..db.dao import DBDAO
+from rowantree.contracts import Action, ActionQueue, UserPopulation, UserStore, UserStores, WorldStatus
+from rowantree.service.sdk import RowanTreeService
+
 from .storyteller import StoryTeller
 
 
 class Personality:
-    dao: DBDAO
+    rowantree_service: RowanTreeService
     loremaster: StoryTeller
 
     max_sleep_time: int  # in seconds
     encounter_change: int  # in percent
 
-    def __init__(self, dao: DBDAO, max_sleep_time: int = 3, encounter_change: int = 100):
-        self.dao = dao
+    def __init__(self, rowantree_service: RowanTreeService, max_sleep_time: int = 3, encounter_change: int = 100):
+        self.rowantree_service = rowantree_service
         self.max_sleep_time = max_sleep_time
         self.encounter_change = encounter_change
         self.loremaster = StoryTeller()
 
     def contemplate(self) -> None:
         # get active users
-        user_set: list[str] = self.dao.get_active_users()
-
-        for target_user in user_set:
+        world_status: WorldStatus = self.rowantree_service.world_status_get()
+        for target_user in world_status.active_players:
             # Lets add an encounter
             self._encounter(target_user=target_user)
 
@@ -33,9 +35,11 @@ class Personality:
 
     def _encounter(self, target_user: str) -> None:
         if Personality._luck(odds=self.encounter_change) is True:
-            user_stores: dict[str, Any] = self.dao.get_user_stores(target_user)
-            event: Optional[Any] = self.loremaster.generate_event(
-                self.dao.get_user_population(target_user), user_stores
+            user_stores: UserStores = self.rowantree_service.user_stores_get(user_guid=target_user)
+            user_population: UserPopulation = self.rowantree_service.user_population_get(user_guid=target_user)
+
+            event: Optional[dict] = self.loremaster.generate_event(
+                user_population=user_population, user_stores=user_stores
             )
             self._process_user_event(event=event, target_user=target_user)
 
@@ -60,8 +64,13 @@ class Personality:
         if event is None:
             return
 
-        action_queue = []
-        user_stores: dict[str, Any] = self.dao.get_user_stores(target_user)
+        action_queue: ActionQueue = ActionQueue(queue=[])
+        user_stores: UserStores = self.rowantree_service.user_stores_get(user_guid=target_user)
+
+        # convert to dictionary
+        user_stores_dict: dict[str, UserStore] = {}
+        for store in user_stores.stores:
+            user_stores_dict[store.name] = store
 
         # process rewards
         if "reward" in event:
@@ -69,14 +78,17 @@ class Personality:
                 amount: int = random.randint(1, event["reward"][reward])
 
                 if reward == "population":
-                    action_queue.append(["deltaUserPopulationByID", [target_user, amount]])
+                    action_queue.queue.append(Action(name="deltaUserPopulationByGUID", arguments=[target_user, amount]))
                     event["reward"][reward] = amount
                 else:
-                    if reward in user_stores:
-                        store_amt = user_stores[reward]
+                    if reward in user_stores_dict:
+                        store_amt = user_stores_dict[reward].amount
                         if store_amt < amount:
                             amount = store_amt
-                        action_queue.append(["deltaUserStoreByStoreName", [target_user, reward, amount]])
+
+                        action_queue.queue.append(
+                            Action(name="deltaUserStoreByStoreNameByGUID", arguments=[target_user, reward, amount])
+                        )
                         event["reward"][reward] = amount
 
         # process curses
@@ -84,20 +96,28 @@ class Personality:
             for curse in event["curse"]:
                 if curse == "population":
                     pop_amount: int = random.randint(1, event["curse"][curse])
-                    if self.dao.get_user_population(target_user) < pop_amount:
-                        pop_amount: int = self.dao.get_user_population(target_user)
-                    action_queue.append(["deltaUserPopulationByID", [target_user, (pop_amount * -1)]])
+                    user_population: UserPopulation = self.rowantree_service.user_population_get(user_guid=target_user)
+                    if user_population.population < pop_amount:
+                        pop_amount: int = user_population.population
+
+                    action_queue.queue.append(
+                        Action(name="deltaUserPopulationByGUID", arguments=[target_user, (pop_amount * -1)])
+                    )
                     event["curse"][curse] = pop_amount
                 else:
                     amount: int = random.randint(1, event["curse"][curse])
                     if curse in user_stores:
-                        store_amt = user_stores[curse]
+                        store_amt = user_stores_dict[curse].amount
                         if store_amt < amount:
                             amount = store_amt
-                    action_queue.append(["deltaUserStoreByStoreName", [target_user, curse, (amount * -1)]])
+
+                    action_queue.queue.append(
+                        Action(name="deltaUserStoreByStoreNameByGUID", arguments=[target_user, curse, (amount * -1)])
+                    )
                     event["curse"][curse] = amount
 
         # Send them the whole event object.
-        action_queue.append(["sendUserNotification", [target_user, json.dumps(event)]])
+        action_queue.queue.append(Action(name="sendUserNotificationByGUID", arguments=[target_user, json.dumps(event)]))
 
-        self.dao.process_action_queue(action_queue)
+        logging.debug(action_queue.json(by_alias=True))
+        self.rowantree_service.action_queue_process(queue=action_queue)
