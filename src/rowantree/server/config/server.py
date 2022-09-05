@@ -1,22 +1,31 @@
+""" Server Config Definition """
+
 import configparser
 import os
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel
 
 
 class ServerConfig(BaseModel):
+    """
+    Server Configuration
+
+    Attributes
+    ----------
+    config_file_path: Optional[str] = "rowantree.config"
+        The config file for the service.
+    log_dir: Optional[str]
+        The log directory.
+    """
+
+    config_file_path: Optional[str] = "rowantree.config"
     log_dir: Optional[str]
 
-    database_server: Optional[str]
-    database_name: Optional[str]
-    database_username: Optional[str]
-    database_password: Optional[str]
-
-    def __init__(self, *args, config_file_path: str = "rowantree.config", **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, **data: Any):
+        super().__init__(**data)
         config = configparser.ConfigParser()
-        config.read(config_file_path)
+        config.read(self.config_file_path)
 
         # Directory Options
         self.log_dir = config.get("DIRECTORY", "logs_dir")

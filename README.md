@@ -11,7 +11,7 @@ pip install rowantree.server
 
 To execute the server:
 ```
-python -m rowantree.server.server
+python -m src.rowantree.server.server
 ```
 
 ## Configuration
