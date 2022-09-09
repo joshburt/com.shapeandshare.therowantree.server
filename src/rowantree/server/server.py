@@ -4,28 +4,23 @@ import logging
 import os
 from pathlib import Path
 
+from rowantree.common.sdk import demand_env_var
 from rowantree.service.sdk import RowanTreeService
 
 from .common.personality import Personality
-from .config.server import ServerConfig
 
 if __name__ == "__main__":
-    # Generating server configuration
-    config: ServerConfig = ServerConfig()
-
     # Setup logging
-    Path(config.log_dir).mkdir(parents=True, exist_ok=True)
+    Path(demand_env_var(name="LOGS_DIR")).mkdir(parents=True, exist_ok=True)
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(message)s",
         datefmt="%m/%d/%Y %I:%M:%S %p",
         level=logging.DEBUG,
         filemode="w",
-        filename=f"{config.log_dir}/{os.uname()[1]}.therowantree.server.log",
+        filename=f"{demand_env_var(name='LOGS_DIR')}/{os.uname()[1]}.therowantree.content.service.log",
     )
 
     logging.debug("Starting server")
-
-    logging.debug(config.json(by_alias=True, exclude_unset=True))
 
     me: Personality = Personality(rowantree_service=RowanTreeService())
 
