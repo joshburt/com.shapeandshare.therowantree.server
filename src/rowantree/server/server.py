@@ -4,10 +4,16 @@ import logging
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+# load locally defined environmental variables
+load_dotenv(dotenv_path="env/.env.offline")  # take environment variables from .env.
+
 from rowantree.common.sdk import demand_env_var
 from rowantree.service.sdk import RowanTreeService
 
-from .common.personality import Personality
+from .common.global_personality import GlobalPersonality
+from .common.global_storyteller import GlobalStoryTeller
 
 if __name__ == "__main__":
     # Setup logging
@@ -22,8 +28,12 @@ if __name__ == "__main__":
 
     logging.debug("Starting server")
 
-    me: Personality = Personality(rowantree_service=RowanTreeService())
+    rowantree_service: RowanTreeService = RowanTreeService()
+    loremaster_service: GlobalStoryTeller = GlobalStoryTeller()
+    personality: GlobalPersonality = GlobalPersonality(
+        rowantree_service=rowantree_service, loremaster_service=loremaster_service
+    )
 
     logging.debug("Starting contemplation loop")
     while True:
-        me.contemplate()
+        personality.contemplate()

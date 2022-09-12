@@ -4,10 +4,12 @@ import copy
 import random
 from typing import Optional
 
-from rowantree.contracts import UserPopulation, UserStore, UserStores
+from rowantree.contracts import StoreType, UserEvent, UserStore
+
+from .abstract_loremaster import AbstractLoremaster
 
 
-class StoryTeller:
+class GlobalStoryTeller(AbstractLoremaster):
     """
     The Story Teller
     This class handles world encounters.
@@ -272,7 +274,7 @@ class StoryTeller:
         ]
     }
 
-    def generate_event(self, user_population: UserPopulation, user_stores: UserStores) -> Optional[dict]:
+    def generate_event(self, user_population: int, user_stores: dict[StoreType, UserStore]) -> Optional[UserEvent]:
         """
         Generates a world event (encounter).
 
@@ -285,48 +287,43 @@ class StoryTeller:
 
         Returns
         -------
-        outbound_event: Optional[dict]
+        outbound_event: Optional[UserEvent]
             An optional encounter for the target user.
         """
 
         num_events: int = len(self.events["global"])
         requirement_check: bool = False
         counter: int = 0
-        new_event: Optional[dict] = None
-
-        # convert to dictionary
-        user_stores_dict: dict[str, UserStore] = {}
-        for store in user_stores.stores:
-            user_stores_dict[store.name] = store
+        new_event_dict: Optional[dict] = None
 
         while requirement_check is False:
             counter += 1
             event_index = random.randint(1, num_events) - 1
-            new_event = self.events["global"][event_index]
+            new_event_dict = self.events["global"][event_index]
 
             # check requirements
-            for requirement in new_event["requirements"]:
+            for requirement in new_event_dict["requirements"]:
                 if requirement == "population":
-                    min_required_pop = new_event["requirements"][requirement]
+                    min_required_pop = new_event_dict["requirements"][requirement]
                     # logging.debug('reported user population: ' + str(user_population))
-                    if user_population.population >= min_required_pop:
+                    if user_population >= min_required_pop:
                         requirement_check = True
                 else:
                     # assume it is a store - get the current amount of the store for the user
-                    min_required_store = new_event["requirements"][requirement]
-                    if requirement in user_stores_dict:
-                        if user_stores_dict[requirement].amount >= min_required_store:
+                    min_required_store = new_event_dict["requirements"][requirement]
+                    if requirement in user_stores:
+                        if user_stores[requirement].amount >= min_required_store:
                             requirement_check = True
 
             # bail out if we've reached the max, no encounters this time
             if counter >= self.MAX_ENCOUNTER_TRIES:
-                new_event = None
+                new_event_dict = None
                 requirement_check = True
 
-        if new_event is None:
+        if new_event_dict is None:
             return None
 
         # remove the requirements stanza before we send to over to the client
-        outbound_event = copy.deepcopy(new_event)
-        del outbound_event["requirements"]
-        return outbound_event
+        new_event_dict.requirements = {}
+
+        return UserEvent().parse_obj(new_event_dict)
