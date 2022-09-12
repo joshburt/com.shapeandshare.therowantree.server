@@ -9,12 +9,12 @@ from pydantic import BaseModel
 from rowantree.contracts import Action, ActionQueue, StoreType, UserEvent, UserEventOtherType, UserStore
 from rowantree.service.sdk import RowanTreeService
 
-from ..common.abstract_loremaster import AbstractLoremaster
+from .abstract_loremaster import AbstractLoremaster
 
 
 class AbstractPersonality(BaseModel):
     """
-    GlobalPersonality (Default)
+    WorldPersonality (Default)
     Generates game world content.
 
     Attributes
@@ -101,7 +101,9 @@ class AbstractPersonality(BaseModel):
                 event.curse[curse] = amount
 
         # Send them the whole event object.
-        action_queue.queue.append(Action(name="sendUserNotificationByGUID", arguments=[target_user, json.dumps(event)]))
+        action_queue.queue.append(
+            Action(name="sendUserNotificationByGUID", arguments=[target_user, event.json(by_alias=True)])
+        )
 
         logging.debug(action_queue.json(by_alias=True))
         self.rowantree_service.action_queue_process(queue=action_queue)

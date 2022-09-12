@@ -1,4 +1,4 @@
-""" GlobalPersonality Definition """
+""" WorldPersonality Definition """
 
 import random
 import time
@@ -7,12 +7,12 @@ from typing import Optional
 from rowantree.contracts import StoreType, UserEvent, UserStore
 from rowantree.service.sdk import WorldStatus
 
-from .abstract_personality import AbstractPersonality
+from ..abstract.abstract_personality import AbstractPersonality
 
 
-class GlobalPersonality(AbstractPersonality):
+class WorldPersonality(AbstractPersonality):
     """
-    GlobalPersonality (Default)
+    WorldPersonality (Default)
     Generates game world content.
 
     Attributes
@@ -44,7 +44,7 @@ class GlobalPersonality(AbstractPersonality):
             The target active user.
         """
 
-        if GlobalPersonality._luck(odds=self.encounter_change) is True:
+        if WorldPersonality._luck(odds=self.encounter_change) is True:
             user_stores: dict[StoreType, UserStore] = self.rowantree_service.user_stores_get(user_guid=target_user)
             user_population: int = self.rowantree_service.user_population_get(user_guid=target_user)
 

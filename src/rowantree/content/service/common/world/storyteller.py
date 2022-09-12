@@ -1,15 +1,16 @@
 """ Story Teller Definition """
 
-import copy
 import random
-from typing import Optional
+from typing import Any, Optional
+
+import pydantic
 
 from rowantree.contracts import StoreType, UserEvent, UserStore
 
-from .abstract_loremaster import AbstractLoremaster
+from ..abstract.abstract_loremaster import AbstractLoremaster
 
 
-class GlobalStoryTeller(AbstractLoremaster):
+class WorldStoryTeller(AbstractLoremaster):
     """
     The Story Teller
     This class handles world encounters.
@@ -17,114 +18,146 @@ class GlobalStoryTeller(AbstractLoremaster):
 
     MAX_ENCOUNTER_TRIES = 10
 
-    # pylint: disable=line-too-long
-    events = {
-        "global": [
+    global_events_dict: dict = {
+        "events": [
             {
                 "title": "a stranger arrives in the night",
+                "text": {},
+                "notification": {},
+                "curse": {},
                 "requirements": {"population": 0},
                 "reward": {"population": 1},
             },
             {
                 "title": "a weathered family takes up in one of the huts",
+                "text": {},
+                "notification": {},
+                "curse": {},
                 "requirements": {"population": 1},
                 "reward": {"population": 3},
             },
             {
                 "title": "a small group arrives, all dust and bones",
+                "text": {},
+                "notification": {},
+                "curse": {},
                 "requirements": {"population": 1},
                 "reward": {"population": 5},
             },
             {
                 "title": "a convoy lurches in, equal parts worry and hope",
+                "text": {},
+                "notification": {},
+                "curse": {},
                 "requirements": {"population": 1},
                 "reward": {"population": 6},
             },
             {
                 "title": "a half-feral and malnourished child is discovered huddled by the great tree",
+                "text": {},
+                "notification": {},
+                "curse": {},
                 "requirements": {"population": 1},
                 "reward": {"population": 1},
             },
             {
                 "title": "another lone wanderer comes into town, in tears to have found a place of sanctuary against the world",
+                "text": {},
+                "notification": {},
+                "curse": {},
                 "requirements": {"population": 1},
                 "reward": {"population": 1},
             },
             {
                 "title": "a fire rampages through one of the huts, destroying it.",
                 "requirements": {"population": 15},
-                "text": ["all residents in the hut perished in the fire."],
+                "text": {1: "all residents in the hut perished in the fire."},
                 "curse": {"population": 10},
+                "notification": {},
+                "reward": {},
             },
             {
                 "title": "a terrible plague is fast spreading through the village.",
                 "requirements": {"population": 20},
-                "text": ["the nights are rent with screams.", "the only hope is a quick death."],
+                "text": {1: "the nights are rent with screams.", 2: "the only hope is a quick death."},
                 "curse": {"population": 15},
+                "notification": {},
+                "reward": {},
             },
             {
                 "title": "a sickness is spreading through the village.",
                 "requirements": {"population": 15},
-                "text": ["only a few die.", "the rest bury them."],
+                "text": {1: "only a few die.", 2: "the rest bury them."},
                 "curse": {"population": 10},
+                "reward": {},
+                "notification": {},
             },
-            {"title": "some villagers are ill", "requirements": {"population": 6}, "curse": {"population": 3}},
+            {
+                "title": "some villagers are ill",
+                "text": {},
+                "reward": {},
+                "notification": {},
+                "requirements": {"population": 6},
+                "curse": {"population": 3},
+            },
             {
                 "title": "A Beast Attack",
                 "requirements": {"population": 15},
-                "text": [
-                    "a pack of snarling beasts pours out of the trees.",
-                    "the fight is short and bloody, but the beasts are repelled.",
-                    "the villagers retreat to mourn the dead.",
-                ],
-                "notification": "wild beasts attack the villagers",
+                "text": {
+                    1: "a pack of snarling beasts pours out of the trees.",
+                    2: "the fight is short and bloody, but the beasts are repelled.",
+                    3: "the villagers retreat to mourn the dead.",
+                },
+                "notification": {1: "wild beasts attack the villagers"},
                 "reward": {"fur": 100, "meat": 100, "teeth": 10},
                 "curse": {"population": 10},
             },
             {
                 "title": "A Robot Attack",
                 "requirements": {"population": 5},
-                "text": [
-                    "a dented and rattling robot rolls into view, sparks falling from lose wires as they arc against its frame.",
-                    "a remnant from some ancient war.",
-                ],
-                "notification": "a robot opens fire on the villagers",
+                "text": {
+                    1: "a dented and rattling robot rolls into view, sparks falling from lose wires as they arc against its frame.",
+                    2: "a remnant from some ancient war.",
+                },
+                "notification": {1: "a robot opens fire on the villagers"},
                 "reward": {"gems": 1, "coins": 10},
                 "curse": {"population": 1},
             },
             {
                 "title": "A Ghoul Attack",
                 "requirements": {"population": 10},
-                "text": [
-                    "the groans could be heard a few hours before they dragged themselves through the main part of the settlement",
-                    "the awful smell, even worse those eyes",
-                    "some of our own dead rose again, and had to be put to rest one final time.",
-                ],
-                "notification": "a heard of ghouls wanders through the settlement",
+                "text": {
+                    1: "the groans could be heard a few hours before they dragged themselves through the main part of the settlement",
+                    2: "the awful smell, even worse those eyes",
+                    3: "some of our own dead rose again, and had to be put to rest one final time.",
+                },
+                "notification": {1: "a heard of ghouls wanders through the settlement"},
                 "reward": {"gems": 1, "coins": 10, "fur": 100, "meat": 10, "teeth": 10},
                 "curse": {"population": 5},
             },
             {
                 "title": "The Forest Has Legs",
                 "requirements": {"population": 20},
-                "text": [
-                    "maybe it was their time to swarm, or just the presence of the settlement",
-                    "the forest came alive as they blanketed everything, assaulting and cocooning all those who fell to them",
-                    "moarn not those who died, but those the spiders took away",
-                ],
-                "notification": "the skittering as the spiders retreated back into the forest haunts the dreams of even the bravest of those who survived",
+                "text": {
+                    1: "maybe it was their time to swarm, or just the presence of the settlement",
+                    2: "the forest came alive as they blanketed everything, assaulting and cocooning all those who fell to them",
+                    3: "moarn not those who died, but those the spiders took away",
+                },
+                "notification": {
+                    1: "the skittering as the spiders retreated back into the forest haunts the dreams of even the bravest of those who survived"
+                },
                 "reward": {"gems": 1, "coins": 10, "fur": 100, "meat": 10, "teeth": 10},
                 "curse": {"population": 10},
             },
             {
                 "title": "Raccoon Attack",
                 "requirements": {"population": 5},
-                "text": [
-                    "Hissing and screaming the raccoon attacks",
-                    "Wielding a pike, it attacked from atop its",
-                    "majestic human mount.",
-                ],
-                "notification": "",
+                "text": {
+                    1: "Hissing and screaming the raccoon attacks",
+                    2: "Wielding a pike, it attacked from atop its",
+                    3: "majestic human mount.",
+                },
+                "notification": {},
                 "reward": {
                     "sulphur": 1,
                     "bait": 1,
@@ -145,13 +178,13 @@ class GlobalStoryTeller(AbstractLoremaster):
             {
                 "title": "The Shock Wave",
                 "requirements": {"population": 1},
-                "text": [
-                    "A great shock wave rolled over the town, breaking everything of questionable assembly.",
-                    "A short time later, that awful sound followed, so loud some of us never fully recovered",
-                    "our hearing.",
-                    "Days later some refugees from that far off disaster arrived.  Blisted, and burned.",
-                ],
-                "notification": "hello?  hello!  I still cant hear anything, ugh.",
+                "text": {
+                    1: "A great shock wave rolled over the town, breaking everything of questionable assembly.",
+                    2: "A short time later, that awful sound followed, so loud some of us never fully recovered",
+                    3: "our hearing.",
+                    4: "Days later some refugees from that far off disaster arrived.  Blisted, and burned.",
+                },
+                "notification": {1: "hello?  hello!  I still cant hear anything, ugh."},
                 "reward": {"population": 20, "sulphur": 3, "coins": 20, "gems": 10, "medicine": 5},
                 "curse": {
                     "population": 5,
@@ -193,52 +226,66 @@ class GlobalStoryTeller(AbstractLoremaster):
             {
                 "title": "A Quiet Death",
                 "requirements": {"population": 5},
-                "text": ["All trails lead to the meadow at the end of the forest."],
+                "text": {1: "All trails lead to the meadow at the end of the forest."},
                 "curse": {"population": 1},
+                "reward": {},
+                "notification": {},
             },
             {
                 "title": "Bait Rot",
                 "requirements": {"bait": 10000},
-                "text": ["the bait has gone bad."],
+                "text": {1: "the bait has gone bad."},
                 "curse": {"bait": 10000},
+                "reward": {},
+                "notification": {},
             },
             {
                 "title": "Wet Store Houses",
                 "requirements": {"population": 200},
-                "text": ["some of the store houses had leaky roofs"],
+                "text": {1: "some of the store houses had leaky roofs"},
                 "curse": {"meat": 10000, "meatpie": 10000, "cured meat": 10000, "seed": 10000, "crops": 10000},
+                "reward": {},
+                "notification": {},
             },
             {
                 "title": "Kidnapping",
                 "requirements": {"population": 1},
-                "text": ["a local street urchin has been reported missing."],
+                "text": {1: "a local street urchin has been reported missing."},
                 "curse": {"population": 1},
+                "reward": {},
+                "notification": {},
             },
             {
                 "title": "Kidnapping of Two",
                 "requirements": {"population": 2},
-                "text": ["a local family looses children"],
+                "text": {1: "a local family looses children"},
                 "curse": {"population": 2},
+                "reward": {},
+                "notification": {},
             },
             {
                 "title": "Slaver Attack",
                 "requirements": {"population": 30},
-                "text": ["a group of slavers attack early in the morning."],
+                "text": {1: "a group of slavers attack early in the morning."},
                 "curse": {"population": 30},
+                "reward": {},
+                "notification": {},
             },
             {
                 "title": "Slaver Raid",
                 "requirements": {"population": 100},
-                "text": ["a group of slavers raid in the middle of the night."],
+                "text": {1: "a group of slavers raid in the middle of the night."},
                 "curse": {"population": 100},
+                "reward": {},
+                "notification": {},
             },
             {
-                "title": "Raccon Spy",
+                "title": "Raccoon Spy",
                 "requirements": {"population": 100},
-                "text": [
-                    "it was on the outskirts for days, it kept coming back",
-                    "after being chased off.  we knew it was trouble.",
-                ],
+                "text": {
+                    1: "it was on the outskirts for days, it kept coming back",
+                    2: "after being chased off.  we knew it was trouble.",
+                },
                 "curse": {
                     "bait": 5000,
                     "meat": 10000,
@@ -252,27 +299,53 @@ class GlobalStoryTeller(AbstractLoremaster):
                     "crops": 10000,
                     "bone spear": 5000,
                 },
+                "reward": {},
+                "notification": {},
             },
             {
                 "title": "Fire At The Lumber Yard",
                 "requirements": {"wood": 10000},
-                "text": ["it burned with terrible bright light that night"],
+                "text": {1: "it burned with terrible bright light that night"},
                 "curse": {"population": 10, "wood": 10000},
+                "reward": {},
+                "notification": {},
             },
             {
                 "title": "Radioactive Artifact",
                 "requirements": {"population": 100},
-                "text": ["such a small thing.", "so innocent looking and beautiful.", "warm even, to the touch."],
+                "text": {
+                    1: "such a small thing.",
+                    2: "so innocent looking and beautiful.",
+                    3: "warm even, to the touch.",
+                },
                 "reward": {"charm": 2},
                 "curse": {"population": 100},
+                "notification": {},
             },
             {
                 "title": "dazed and confused, a ragged women emerges from the dark forest",
                 "requirements": {"population": 1},
                 "reward": {"population": 1},
+                "text": {},
+                "curse": {},
+                "notification": {},
             },
         ]
     }
+    # pylint: disable=line-too-long
+
+    events: list[UserEvent] = []
+
+    def __init__(self, **data: Any):
+        super().__init__(**data)
+
+        for event_dict in self.global_events_dict["events"]:
+            try:
+                event: UserEvent = UserEvent.parse_obj(event_dict)
+                self.events.append(event)
+            except pydantic.error_wrappers.ValidationError as error:
+                print(event_dict)
+                raise error
 
     def generate_event(self, user_population: int, user_stores: dict[StoreType, UserStore]) -> Optional[UserEvent]:
         """
@@ -291,40 +364,39 @@ class GlobalStoryTeller(AbstractLoremaster):
             An optional encounter for the target user.
         """
 
-        num_events: int = len(self.events["global"])
+        num_events: int = len(self.events)
         requirement_check: bool = False
         counter: int = 0
-        new_event_dict: Optional[dict] = None
+        new_event: Optional[UserEvent] = None
 
         while requirement_check is False:
             counter += 1
             event_index = random.randint(1, num_events) - 1
-            new_event_dict = self.events["global"][event_index]
+            new_event = self.events[event_index]
 
             # check requirements
-            for requirement in new_event_dict["requirements"]:
+            for requirement in new_event.requirements:
                 if requirement == "population":
-                    min_required_pop = new_event_dict["requirements"][requirement]
+                    min_required_pop = new_event.requirements[requirement]
                     # logging.debug('reported user population: ' + str(user_population))
                     if user_population >= min_required_pop:
                         requirement_check = True
                 else:
                     # assume it is a store - get the current amount of the store for the user
-                    min_required_store = new_event_dict["requirements"][requirement]
+                    min_required_store = new_event.requirements[requirement]
                     if requirement in user_stores:
                         if user_stores[requirement].amount >= min_required_store:
                             requirement_check = True
 
             # bail out if we've reached the max, no encounters this time
             if counter >= self.MAX_ENCOUNTER_TRIES:
-                new_event_dict = None
+                new_event = None
                 requirement_check = True
 
-        if new_event_dict is None:
+        if new_event is None:
             return None
 
         # remove the requirements stanza before we send to over to the client
-        if "requirements" in new_event_dict:
-            del new_event_dict["requirements"]
+        new_event.requirements = {}
 
-        return UserEvent().parse_obj(new_event_dict)
+        return new_event

@@ -12,8 +12,10 @@ load_dotenv(dotenv_path="env/.env.offline")  # take environment variables from .
 from rowantree.common.sdk import demand_env_var
 from rowantree.service.sdk import RowanTreeService
 
-from .common.global_personality import GlobalPersonality
-from .common.global_storyteller import GlobalStoryTeller
+from .common.world.personality import WorldPersonality
+from .common.world.storyteller import WorldStoryTeller
+
+# from .common.
 
 if __name__ == "__main__":
     # Setup logging
@@ -26,11 +28,11 @@ if __name__ == "__main__":
         filename=f"{demand_env_var(name='LOGS_DIR')}/{os.uname()[1]}.therowantree.content.service.log",
     )
 
-    logging.debug("Starting server")
+    logging.debug("Starting service")
 
     rowantree_service: RowanTreeService = RowanTreeService()
-    loremaster_service: GlobalStoryTeller = GlobalStoryTeller()
-    personality: GlobalPersonality = GlobalPersonality(
+    loremaster_service: WorldStoryTeller = WorldStoryTeller()
+    personality: WorldPersonality = WorldPersonality(
         rowantree_service=rowantree_service, loremaster_service=loremaster_service
     )
 
