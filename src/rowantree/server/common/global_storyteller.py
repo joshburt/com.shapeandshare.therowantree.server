@@ -324,6 +324,7 @@ class GlobalStoryTeller(AbstractLoremaster):
             return None
 
         # remove the requirements stanza before we send to over to the client
-        new_event_dict.requirements = {}
+        if "requirements" in new_event_dict:
+            del new_event_dict["requirements"]
 
         return UserEvent().parse_obj(new_event_dict)
