@@ -10,8 +10,6 @@ from rowantree.service.sdk import RowanTreeService
 from .common.world.personality import WorldPersonality
 from .common.world.storyteller import WorldStoryTeller
 
-# from .common.
-
 if __name__ == "__main__":
     # Setup logging
     Path(demand_env_var(name="LOGS_DIR")).mkdir(parents=True, exist_ok=True)
