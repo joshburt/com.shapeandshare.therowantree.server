@@ -7,7 +7,10 @@ from pathlib import Path
 from rowantree.common.sdk import demand_env_var
 from rowantree.service.sdk import RowanTreeService
 
-from .common.personality import Personality
+from .common.world.personality import WorldPersonality
+from .common.world.storyteller import WorldStoryTeller
+
+# from .common.
 
 if __name__ == "__main__":
     # Setup logging
@@ -20,10 +23,14 @@ if __name__ == "__main__":
         filename=f"{demand_env_var(name='LOGS_DIR')}/{os.uname()[1]}.therowantree.content.service.log",
     )
 
-    logging.debug("Starting server")
+    logging.debug("Starting service")
 
-    me: Personality = Personality(rowantree_service=RowanTreeService())
+    rowantree_service: RowanTreeService = RowanTreeService()
+    loremaster_service: WorldStoryTeller = WorldStoryTeller()
+    personality: WorldPersonality = WorldPersonality(
+        rowantree_service=rowantree_service, loremaster_service=loremaster_service
+    )
 
     logging.debug("Starting contemplation loop")
     while True:
-        me.contemplate()
+        personality.contemplate()
