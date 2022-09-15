@@ -1,3 +1,5 @@
+""" Abstract Personality Definition """
+
 import logging
 import random
 from abc import abstractmethod
@@ -109,4 +111,4 @@ class AbstractPersonality(BaseModel):
 
     @abstractmethod
     def contemplate(self):
-        """ """
+        """Main loop for processing an epoch of events"""
