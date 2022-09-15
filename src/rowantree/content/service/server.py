@@ -4,11 +4,6 @@ import logging
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv
-
-# load locally defined environmental variables
-load_dotenv(dotenv_path="env/.env.offline")  # take environment variables from .env.
-
 from rowantree.common.sdk import demand_env_var
 from rowantree.service.sdk import RowanTreeService
 

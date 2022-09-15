@@ -60,6 +60,7 @@ class AbstractPersonality(BaseModel):
         user_stores: dict[StoreType, UserStore] = self.rowantree_service.user_stores_get(user_guid=target_user)
 
         # process rewards
+        rewards_to_remove: list = []
         for reward in event.reward.keys():
             amount: int = random.randint(1, event.reward[reward])  # Determine an amount up to the max specified.
 
@@ -76,8 +77,14 @@ class AbstractPersonality(BaseModel):
                         Action(name="deltaUserStoreByStoreNameByGUID", arguments=[target_user, reward, amount])
                     )
                     event.reward[reward] = amount
+                else:
+                    # Remove skipped types
+                    rewards_to_remove.append(reward)
+        for reward in rewards_to_remove:
+            del event.reward[reward]
 
         # process curses
+        curses_to_remove: list = []
         for curse in event.curse.keys():
             if curse == UserEventOtherType.POPULATION:
                 pop_amount: int = random.randint(1, event.curse[curse])
@@ -95,11 +102,15 @@ class AbstractPersonality(BaseModel):
                     store_amt = user_stores[curse].amount
                     if store_amt < amount:
                         amount = store_amt
-
+                else:
+                    # Remove skipped types
+                    curses_to_remove.append(curse)
                 action_queue.queue.append(
                     Action(name="deltaUserStoreByStoreNameByGUID", arguments=[target_user, curse, (amount * -1)])
                 )
                 event.curse[curse] = amount
+        for curse in curses_to_remove:
+            del event.curse[curse]
 
         # Send them the whole event object.
         action_queue.queue.append(
