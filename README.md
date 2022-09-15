@@ -6,7 +6,7 @@ The server will generate game world events (content) for all active players.
 
 To install the server:
 ```
-pip install rowantree.server
+pip install rowantree.content.service
 ```
 
 To execute the server:
