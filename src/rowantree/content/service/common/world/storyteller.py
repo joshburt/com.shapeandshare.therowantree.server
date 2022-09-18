@@ -60,7 +60,7 @@ class WorldStoryTeller(AbstractLoremaster):
         while requirement_check is False:
             counter += 1
             event_index = random.randint(1, num_events) - 1
-            new_event = self.events[event_index]
+            new_event = self.events[event_index].copy()
 
             # check requirements
             for requirement in new_event.requirements:
