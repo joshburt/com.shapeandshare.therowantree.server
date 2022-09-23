@@ -62,7 +62,10 @@ class AbstractPersonality(BaseModel):
         # process rewards
         rewards_to_remove: list = []
         for reward in event.reward.keys():
-            amount: int = random.randint(1, event.reward[reward])  # Determine an amount up to the max specified.
+            if event.reward[reward] <= 1:
+                amount: int = 1
+            else:
+                amount: int = random.randint(1, event.reward[reward])  # Determine an amount up to the max specified.
 
             if reward == UserEventOtherType.POPULATION:
                 action_queue.queue.append(Action(name="deltaUserPopulationByGUID", arguments=[target_user, amount]))
@@ -87,7 +90,11 @@ class AbstractPersonality(BaseModel):
         curses_to_remove: list = []
         for curse in event.curse.keys():
             if curse == UserEventOtherType.POPULATION:
-                pop_amount: int = random.randint(1, event.curse[curse])
+                if event.curse[curse] <= 1:
+                    pop_amount: int = 1
+                else:
+                    pop_amount: int = random.randint(1, event.curse[curse])
+
                 user_population: int = self.rowantree_service.user_population_get(user_guid=target_user)
                 if user_population < pop_amount:
                     pop_amount: int = user_population
@@ -97,7 +104,11 @@ class AbstractPersonality(BaseModel):
                 )
                 event.curse[curse] = pop_amount
             else:
-                amount: int = random.randint(1, event.curse[curse])
+                if event.curse[curse] <= 1:
+                    amount: int = 1
+                else:
+                    amount: int = random.randint(1, event.curse[curse])
+
                 if curse in user_stores:
                     store_amt = user_stores[curse].amount
                     if store_amt < amount:
