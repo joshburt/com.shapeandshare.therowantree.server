@@ -19,7 +19,6 @@ def get_log_params(to_file: bool = False) -> dict:
     else:
         params["stream"] = sys.stdout
 
-    print(params)
     return params
 
 
