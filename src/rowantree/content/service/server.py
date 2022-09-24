@@ -1,15 +1,14 @@
 """ Content Service Entry Point """
 
 import logging
-import sys
 
 from rowantree.common.sdk import demand_env_var, demand_env_var_as_bool, demand_env_var_as_float, demand_env_var_as_int
 from rowantree.game.service.sdk import RowanTreeService
 from rowantree.game.service.sdk.contracts.dto.command_options import CommandOptions
-from src.rowantree.content.service.utils.log import setup_logging
 
 from .common.world.personality import WorldPersonality
 from .common.world.storyteller import WorldStoryTeller
+from .utils.log import setup_logging
 
 
 def handler():
