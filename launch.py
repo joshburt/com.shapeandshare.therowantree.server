@@ -27,4 +27,4 @@ if __name__ == "__main__":
     print(stdout)
     print(stderr)
     if returncode != 0:
-        raise Exception("Integration Test Execute Failed")
+        raise Exception("Failed to launch process")

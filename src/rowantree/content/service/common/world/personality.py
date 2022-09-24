@@ -5,7 +5,7 @@ import time
 from typing import Optional
 
 from rowantree.contracts import StoreType, UserEvent, UserStore
-from rowantree.service.sdk import WorldStatus
+from rowantree.game.service.sdk import WorldStatus
 
 from ..abstract.abstract_personality import AbstractPersonality
 
