@@ -8,7 +8,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from rowantree.contracts import Action, ActionQueue, StoreType, UserEvent, UserEventOtherType, UserStore
-from rowantree.service.sdk import RowanTreeService
+from rowantree.game.service.sdk import RowanTreeService
 
 from .abstract_loremaster import AbstractLoremaster
 
