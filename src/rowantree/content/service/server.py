@@ -1,26 +1,19 @@
 """ Content Service Entry Point """
 
 import logging
-import os
-from pathlib import Path
+import sys
 
-from rowantree.common.sdk import demand_env_var, demand_env_var_as_float, demand_env_var_as_int
+from rowantree.common.sdk import demand_env_var, demand_env_var_as_bool, demand_env_var_as_float, demand_env_var_as_int
 from rowantree.game.service.sdk import RowanTreeService
 from rowantree.game.service.sdk.contracts.dto.command_options import CommandOptions
+from src.rowantree.content.service.utils.log import setup_logging
 
 from .common.world.personality import WorldPersonality
 from .common.world.storyteller import WorldStoryTeller
 
-if __name__ == "__main__":
-    # Setup logging
-    Path(demand_env_var(name="LOGS_DIR")).mkdir(parents=True, exist_ok=True)
-    logging.basicConfig(
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        datefmt="%m/%d/%Y %I:%M:%S %p",
-        level=logging.DEBUG,
-        filemode="w",
-        filename=f"{demand_env_var(name='LOGS_DIR')}/{os.uname()[1]}.therowantree.content.service.log",
-    )
+
+def handler():
+    setup_logging(to_file=demand_env_var_as_bool("LOG_TO_FILE"))
 
     logging.debug("Starting service")
 
@@ -42,3 +35,7 @@ if __name__ == "__main__":
     logging.debug("Starting contemplation loop")
     while True:
         personality.contemplate()
+
+
+if __name__ == "__main__":
+    handler()
